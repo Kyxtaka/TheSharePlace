@@ -1,0 +1,10 @@
+-- Drop tables with foreign key dependencies first
+DROP TABLE GROUPS_USERS;
+DROP TABLE ACCOUNTS;
+DROP TABLE USER_ROLES;
+
+-- Drop tables with no dependencies
+DROP TABLE GROUPS;
+DROP TABLE PLATFORMS;
+DROP TABLE ROLES;
+DROP TABLE USERS;

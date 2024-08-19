@@ -1,0 +1,19 @@
+.account-privileges {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.component-body {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+}
+
+.left-side {
+    margin: 1rem;
+    max-width: 30rem;
+    border-right: 2px solid grey;
+}
+.right-side {
+    margin: 1rem;
+}

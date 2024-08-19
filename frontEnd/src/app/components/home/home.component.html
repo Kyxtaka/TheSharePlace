@@ -1,0 +1,78 @@
+<div class="full-screen">
+	<div class="app">
+		<header class="app-header">
+			<div class="app-header-logo">
+				<p class="logo-title">
+					<span>The Sharing Place</span>
+					<span>Hikarizsu</span>
+				</p>
+			</div>
+			<div class="app-header-navigation">
+				<div class="tabs">
+					<a routerLink="overview">Overview</a>
+					<a routerLink="groups">Groups</a>
+					<a routerLink="credentials">Accounts</a>
+					<a routerLink="share-account">Share Account</a>
+					<a routerLink="create-group">Create Group</a>
+				</div>
+			</div>
+			<div class="app-header-actions">
+				<button class="user-profile">
+					<span>{{username}}</span>
+					<span>
+						<img src="" alt="">
+					</span>
+				</button>
+				<!-- <div class="app-header-actions-buttons">
+					<button class="icon-button large">
+						<i class="ph-magnifying-glass"></i>
+					</button>
+					<button class="icon-button large">
+						<i class="ph-bell"></i>
+					</button>
+				</div> -->
+			</div>
+			<!-- <div class="app-header-mobile">
+				<button class="icon-button large">
+					<i class="ph-list"></i>
+				</button>
+			</div> -->
+		</header>
+		<div class="app-body">
+			<div class="app-body-navigation">
+				<nav class="navigation">
+					<a routerLink="/">
+						<i class="ph-browsers"></i>
+						<span>Welcome Page</span>
+					</a>
+					<!-- <a >
+						<i class="ph-browsers"></i>
+						<span>Dashboard</span>
+					</a>
+					<a >
+						<i class="ph-check-square"></i>
+						<span>Social</span>
+					</a>
+					<a >
+						<i class="ph-swap"></i>
+						<span>Account management</span>
+					</a>
+					<a >
+						<i class="ph-file-text"></i>
+						<span>Contact Admin</span>
+					</a> -->
+				</nav>
+				<footer class="footer">
+					<h1>Hikarizsu<small>©</small></h1>
+					<div>
+						Hikarizsu ©<br />
+						All Rights Reserved 2024
+					</div>
+				</footer>
+			</div>
+			<div class="">
+				<router-outlet></router-outlet>
+			</div>
+		</div>
+	</div>
+</div>

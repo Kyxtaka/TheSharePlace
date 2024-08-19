@@ -1,0 +1,33 @@
+<div class="main-content">
+    <div class="overview">
+        <h1>Overview</h1>
+        <div class="component-body">
+            <div class="left-side">
+                <div class="greetings">
+                    <h2>Greetings</h2>
+                    <div class="account-privileges">
+                        <p>Account privileges : </p>
+                        <p *ngIf="show?.status == [] else elseBlock" id="status-admin">Administrator</p>
+                        <ng-template #elseBlock>
+                            <p id="status-user">User</p>
+                        </ng-template>
+                    </div>
+                    <p>Hello {{username}}, how are you today ?</p>
+                    <p>All the informations about shared groups and account are available on the right panel</p>
+                </div>
+            </div>
+            <div class="right-side">
+                <div class="groups-count">
+                    <h2>Groups</h2>
+                    <p>{{show?.groupsCount}} groups are shared with you my dear</p>
+                </div>
+                <div class="groups-count">
+                    <h2>Accounts</h2>
+                    <p>In total you have access to {{show?.accountCount}}  differents accounts</p>
+                </div>
+            </div>
+        </div>
+    </div> 
+</div>
+
+

@@ -1,0 +1,113 @@
+* {
+	color: white;
+    font: inherit;
+}
+
+
+.container{
+    position: relative;
+    width: 300px;
+    height : 250px;
+    background: #1F1F1F;
+    margin: 1.7rem;
+    margin-left: 0px;
+    margin-top: 1rem;
+    /* background: #010916; */
+    border-radius: 8px;
+    overflow: hidden;
+    
+  }
+  .container::before
+  {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 300px;
+      height: 250px;
+      background: linear-gradient(0deg,transparent,
+      #45f3ff,#45f3ff);
+      transform-origin: bottom right;
+      animation: animate 6s linear infinite;
+  }
+  .container::after
+  {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 300px;
+      height: 250px;
+      background: linear-gradient(0deg,transparent,
+      #45f3ff,#45f3ff);
+      transform-origin: bottom right;
+      animation: animate 6s linear infinite;
+      animation-delay:  -3s;
+  }
+  @keyframes animate
+  {
+      0%
+      {
+          transform: rotate(0deg);
+      }
+      100%
+      {
+          transform: rotate(360deg);
+      }
+  }
+
+  .box
+  {
+      position: absolute;
+      inset: 2px;
+      border-radius: 8px;
+      background: #1F1F1F;
+      z-index: 10;
+      padding: 1rem;
+      display:  flex;
+      flex-direction: column;
+  }
+
+  .box h2
+  {
+      color: #45f3ff;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      /* margin-bottom: 2em; */
+  }
+
+  .box h4
+  {
+      color: #45f3ff;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      font-size: 2em;
+  }
+
+  .group-title {
+    color: white;
+    font-size: 1em;
+  }
+   
+  .group-redirect
+  {
+      border:none;
+      outline:none;
+      background:#010916;
+      padding: 11px 25px;
+      width: 100px;
+      margin-top: 10px;
+      border-radius: 4px;
+      font-weight:  600;
+      cursor: pointer;
+  }
+  .group-redirect
+  {
+      opacity: 0.8;
+  }
+
+  .englober {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }

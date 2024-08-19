@@ -1,0 +1,13 @@
+<p>Shared groups</p>
+<p>Below there are all the group that you have access</p>
+<div class="englober">
+        <div class="container" *ngFor="let group of groupsArray">
+                <div class="box">
+                        <h1 class="group-title">{{group.name}}</h1>
+                        <h1 class="group-title">{{group.UID}}</h1>
+                        <h2 class="group-description-title">Description :</h2>
+                        <article class="group-description-article">{{group.description}}</article>
+                        <button class="group-redirect" (click)="redirect(group.name)">Go to {{group.name}}</button>
+                </div>
+        </div>
+</div>

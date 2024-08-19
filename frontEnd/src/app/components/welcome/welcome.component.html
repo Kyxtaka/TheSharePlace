@@ -1,0 +1,70 @@
+<div class="main-content">
+    <div class="app-header">
+        <div class="app-header-logi">
+            <p class="logo-title">
+                <span>The Share Place</span>
+                <span>Hikarizsu</span>
+            </p>
+        </div>
+        <div class="app-header-navigation">
+            <div class="tabs">
+                <div class="app-header-navigation-commom">
+                    <a routerLink="/home" *ngIf="isLogged">My Space</a>
+                </div>       
+            </div>
+        </div>
+        <div class="app-header-actions">
+            <div class="profile">
+                <a routerLink="login" id="redirector-link-login" *ngIf="!isLogged" >Log in</a>
+                <button class="user-profile" *ngIf="isLogged">
+                    <span>{{this.username}}</span>
+                    <span>
+                        <img src="" alt="">
+                    </span>
+                </button>
+            </div>
+            <div class="app-header-actions-buttons">
+                <button id="register" class="redirector-link" routerLink="register" *ngIf="!isLogged">Register</button>
+                <button id="disconect" class="redirector-link" routerLink="disconect" *ngIf="isLogged" >Disconect</button>
+                <button id="support"  class="redirector-link" routerLink="Support">Support</button>
+            </div>
+        </div>
+    </div>
+    <div class="app-body">
+        <div class="app-body-main">
+            <div class="app-body-left">
+                <div class="faq">
+                    <section class="faq-what">
+                        <h1>What is The Share Place ?</h1>
+                        <article>
+                            The share place is a place that you and your friends can share your accounts easily. It works like a Password Manager
+                        </article>
+                    </section>
+                    <section class="faq-how">
+                        <h1>How to use it ?</h1>
+                        <article>
+                            To user Tht Share Place, you need to log in with the given account by the administrator.
+                        </article>
+                    </section>
+                    <section class="faq-how">
+                        <h1>How do I share an account ?</h1>
+                        <article>
+                            To complete.
+                        </article>
+                    </section>
+                    <section class="faq-sucure">
+                        <h1>Is it secure ?</h1>
+                        <article>
+                            To complete.
+                        </article>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <h1>Copyright Nathan Randriatsoa / Hikarizsu.</h1>
+        <span  class="dev">This project is currently under developpement.</span><br>
+        <span class="dev">A lot of features and functions still not working.</span>
+    </div>
+</div>
