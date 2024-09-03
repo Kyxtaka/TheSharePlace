@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CookieService } from 'ngx-cookie-service';
+import { APIURL } from '../data/data.service';
 import * as jwt_decode from 'jwt-decode'; // Correct import for jwt-decode
 
 @Injectable({
@@ -9,7 +10,7 @@ import * as jwt_decode from 'jwt-decode'; // Correct import for jwt-decode
 })
 export class AuthService {
 
-  private apiUrl = 'http://localhost:8080/api/auth/login'; // URL de votre endpoint d'authentification
+  private apiUrl = `${APIURL}/api/auth/login`; // URL de votre endpoint d'authentification
 
   constructor(private http: HttpClient,private cookieService: CookieService) { }
 

@@ -4,6 +4,14 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    // "serve": {
+    //   "options": {
+    //     "ssl": true,
+    //     "sslKey": "./key.pem",
+    //     "sslCert": "./cert.pem",
+    //     "port": 4200
+    //   }
+    // },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -24,6 +32,7 @@
       "dom"
     ]
   },
+  
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
