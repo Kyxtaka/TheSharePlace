@@ -3,6 +3,11 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TokenUtilService } from '../token/token-util.service';
 
+export var protocol = "http"
+export var apiBaseUrl = "localhost"
+export var port = "8080"
+export const APIURL = `${protocol}://${apiBaseUrl}:${port}`
+
 export interface UserData {
   userId: number,
   username: string,
@@ -51,9 +56,11 @@ export enum Privilege {
 @Injectable({
   providedIn: 'root'
 })
+
 export class APIServiceAccount {
 
-  private apiUrl = "http://localhost:8080/api/data/account"
+  private requestMatcher = `api/data/account`
+  private apiUrl = `${APIURL}/${this.requestMatcher}`
 
   constructor(private http: HttpClient, private tokenService: TokenUtilService) { }
 
@@ -75,7 +82,9 @@ export class APIServiceAccount {
   providedIn: 'root' // This makes the service available application-wide
 })
 export class APIServiceGroup {
-  private apiUrl = "http://localhost:8080/api/data/group";
+
+  private requestMatcher = "api/data/group"
+  private apiUrl = `${APIURL}/${this.requestMatcher}`
 
   constructor(
     private http: HttpClient, 
@@ -96,8 +105,9 @@ export class APIServiceGroup {
   providedIn: 'root' // This makes the service available application-wide
 })
 export class APIServiceUser {
-   private apiUrl = "http://localhost:8080/api/data/user"
-   private authAPIURL  = "http://localhost:8080/api/auth"
+
+  private apiUrl = `${APIURL}/api/data/user`
+  private authAPIURL  = `${APIURL}/api/auth`
 
    constructor(
     private http: HttpClient, 
@@ -118,7 +128,9 @@ export class APIServiceUser {
   providedIn: 'root' // This makes the service available application-wide
 })
 export class APIServicePlatform {
-   private apiUrl = "http://localhost:8080/api/data/paltform"
+
+   private requestMatcher = "api/data/paltform"
+   private apiUrl = `${APIURL}/${this.requestMatcher}`
 
    constructor(
     private http: HttpClient, 
