@@ -22,12 +22,14 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.Duration;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig implements WebMvcConfigurer  {
 
     private final CustomAuthenticationEntryPoint authEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
@@ -40,6 +42,18 @@ public class SecurityConfig {
     ) {
         this.accessDeniedHandler = accessDeniedHandler;
         this.authEntryPoint = authEntryPoint;
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(
+                        "https://theshareplace.hikarizsu.fr:8443/",
+                        "http://localhost:4200/"
+                ) // Autorisation WebServer + Angular dev serveur
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 
     @Bean
@@ -71,6 +85,9 @@ public class SecurityConfig {
                                 new RequestAttributeSecurityContextRepository(),
                                 new HttpSessionSecurityContextRepository()
                         ))
+                )
+                .requiresChannel(channel -> channel
+                        .anyRequest().requiresSecure()
                 )
                 .httpBasic(Customizer.withDefaults());
         return http.build();
