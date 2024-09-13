@@ -50,7 +50,7 @@ public class SecurityConfig implements WebMvcConfigurer  {
                 .allowedOrigins(
                         "https://theshareplace.hikarizsu.fr:8443/",
                         "http://localhost:4200/"
-                ) // Autorisation WebServer + Angular dev serveur
+                )// Autorisation WebServer + Angular dev serveur
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
