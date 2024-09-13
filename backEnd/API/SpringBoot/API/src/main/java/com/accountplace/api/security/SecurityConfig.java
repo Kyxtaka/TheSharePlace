@@ -48,7 +48,7 @@ public class SecurityConfig implements WebMvcConfigurer  {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins(
-                        "https://theshareplace.hikarizsu.fr:8443/",
+                        "https://theshareplace.hikarizsu.fr/",
                         "http://localhost:4200/"
                 )// Autorisation WebServer + Angular dev serveur
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
