@@ -1,4 +1,17 @@
 # accountplaceProject
+## Mode d'emploi
+Cette application Web est déployé sur un serveur externe (nginx) penser à vérifier la version déployé (alpha, bêta, stable)
+
+Voici les étapes pour utiliser l'application: 
+- tapez l'URL : theshareplace.hikarizsu.fr 
+- Connectez vous 
+- Naviguez et accédez à vos services
+
+Vos service : 
+- créer des groupes de partage 
+- Ajouter des compte à partager
+
+
 ##  Note
 * usage de `PostgreSQL` en SGBD
 * usage de `SpringBoot` pour le back-End (API)
