@@ -1,3 +1,6 @@
+-- with the current DB structure, insertion file is unused.
+
+/*
 -- Insertion compte utilisateur et admin
 INSERT INTO USERS (password, username, mail, firstname, lastname) VALUES 
     ('test', 'user1', 'akiizsan@gmail.com', 'Nathan', 'Randriantsoa'),
@@ -33,3 +36,4 @@ INSERT INTO ACCOUNTS (username, password, mail, A2F, platform_id, group_id) VALU
 INSERT INTO GROUPS_USERS (group_id, user_id) VALUES
     (1, 1),  -- Assuming auto-incremented group_id and user_id are both 1
     (1, 2);  -- Assuming auto-incremented group_id is 1 and user_id is 2
+*/
