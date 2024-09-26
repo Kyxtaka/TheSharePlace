@@ -6,7 +6,8 @@ INSERT INTO USERS (password, username, mail, firstname, lastname) VALUES
 -- Insertion ROLES
 INSERT INTO ROLES (name) VALUES 
     ('ADMIN'),
-    ('USER');
+    ('USER')
+    ('GROUP MANAGER');
 
 -- Insertion USER-> ROLE
 INSERT INTO USER_ROLES (user_id, role_id) VALUES

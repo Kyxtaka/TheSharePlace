@@ -28,6 +28,13 @@ CREATE TABLE GROUPS (
     group_description varchar(255)
 );
 
+-- creation de group manager
+CREATE TABLE GROUPMANAGERS (
+    user_id int references USERS (id),
+    group_id int references GROUPS (id),
+    PRIMARY KEY (user_id, group_id)
+);
+
 -- creation plateform
 CREATE TABLE PLATFORMS (
     id SERIAL PRIMARY KEY,
@@ -49,5 +56,6 @@ CREATE TABLE ACCOUNTS (
 CREATE TABLE GROUPS_USERS (
     group_id int references GROUPS (id),
     user_id int references USERS (id),
-    PRIMARY KEY (group_id, user_id)
+    role_id int references ROLES (id),
+    PRIMARY KEY (group_id, user_id, role_id)
 );
