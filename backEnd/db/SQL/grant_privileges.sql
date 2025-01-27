@@ -5,7 +5,7 @@ CREATE ROLE TSPAPI WITH LOGIN PASSWORD 'dont_give_your_db_api_user_password';
 GRANT ALL PRIVILEGES ON DATABASE TSPDB TO TSPAPI;
 
 -- Connect to the TSPDB database
-\c TSPDB
+\c tspdb
 
 -- Grant all privileges on all tables (existing ones)
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO TSPAPI;
