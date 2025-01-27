@@ -1,7 +1,7 @@
 -- Insertion ROLES
 INSERT INTO ROLES (name) VALUES 
     ('ADMIN'),
-    ('USER')
+    ('USER'),
     ('GROUP MANAGER');
 
 -- Insertion Plateforme
