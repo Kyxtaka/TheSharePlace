@@ -2,6 +2,7 @@
 TRUNCATE GROUPS_USERS CASCADE;
 TRUNCATE ACCOUNTS CASCADE;
 TRUNCATE USER_ROLES CASCADE;
+TRUNCATE 
 
 -- Truncate tables without dependencies or which are referenced by other tables
 TRUNCATE GROUPS CASCADE;

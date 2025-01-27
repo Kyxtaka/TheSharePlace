@@ -1,26 +1,11 @@
-
------------------- PARTIE INFORMATION PERSONNELLE --------------------------------
--- table Personne 
-create table PERSONNE ( 
-    id SERIAL PRIMARY KEY,
-    nom varchar(255) NOT NULL,
-    prenom varchar(255) NOT NULL
-)
-
------------------- PARTIE COMPTE UTILISATEUR --------------------------------
 -- create users details
 CREATE TABLE USERS (
     id SERIAL PRIMARY KEY,
     password varchar(255),
     username varchar(255) UNIQUE NOT null,
-    mail varchar(255) UNIQUE NOT NULL
-);
-
--- table association entre compte utilisateur et une personne
-CREATE TABLE USER_PERSONNE (
-    user_id int references USERS (id),
-    personne_id int references PERSONNE (id),
-    PRIMARY KEY (user_id, personne_id)
+    mail varchar(255) UNIQUE NOT NULL,
+    firstname varchar(255),
+    lastname varchar(255)
 );
 
 -- create roles in the application 
@@ -36,8 +21,6 @@ CREATE TABLE USER_ROLES (
     PRIMARY KEY (user_id, role_id)
 );
 
-
------------------------- PARTIE GROUPE DE PARTAGE DE COMPTE ---------------------
 -- create groups that will contains shared accounts
 CREATE TABLE GROUPS (
     id SERIAL PRIMARY KEY,
@@ -47,15 +30,6 @@ CREATE TABLE GROUPS (
     group_description varchar(255)
 );
 
--- Creation de la relation de role pour les group et utilisateurs
-CREATE TABLE GROUPS_USERS (
-    group_id int references GROUPS (id),
-    user_id int references USERS (id),
-    role_id int references ROLES (id),
-    PRIMARY KEY (group_id, user_id, role_id)
-);
-
------------------------- PARTIE COMPTE PARTAGE --------------------------------
 -- create platefor, plateforme of the shared accounts
 CREATE TABLE PLATFORMS (
     id SERIAL PRIMARY KEY,
@@ -75,3 +49,10 @@ CREATE TABLE ACCOUNTS (
     group_id int references GROUPS (id)
 );
 
+-- Creation de la relation de role pour les group et utilisateurs
+CREATE TABLE GROUPS_USERS (
+    group_id int references GROUPS (id),
+    user_id int references USERS (id),
+    role_id int references ROLES (id),
+    PRIMARY KEY (group_id, user_id, role_id)
+);

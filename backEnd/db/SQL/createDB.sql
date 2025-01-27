@@ -2,8 +2,8 @@ CREATE ROLE TSPAPI WITH LOGIN PASSWORD 'dont_give_your_db_api_user_password';
 
 
 -- Create the databse or run creation script
-GRANT ALL PRIVILEGES ON DATABASE TSPAPPPDB TO TSPAPI;
-\c TSPAPPPDB
+GRANT ALL PRIVILEGES ON DATABASE TSPDB TO TSPAPI;
+\c TSPDB
 
 
 -- Grant all privileges on all tables (existing ones)
