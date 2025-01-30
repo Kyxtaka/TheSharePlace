@@ -1,25 +1,13 @@
----------------- PARTIE INFORMATION PERSONNELLE --------------------------------
--- table Personne 
-CREATE TABLE PERSONNE ( 
-    id SERIAL PRIMARY KEY,
-    nom VARCHAR(255) NOT NULL,
-    prenom VARCHAR(255) NOT NULL
-);
 
 ------------------ PARTIE COMPTE UTILISATEUR --------------------------------
 -- create users details
 CREATE TABLE USERS (
     id SERIAL PRIMARY KEY,
     password VARCHAR(255),
+    nom VARCHAR(255) NOT NULL,
+    prenom VARCHAR(255) NOT NULL,
     username VARCHAR(255) UNIQUE NOT NULL,
     mail VARCHAR(255) UNIQUE NOT NULL
-);
-
--- table association entre compte utilisateur et une personne
-CREATE TABLE USER_PERSONNE (
-    user_id INT REFERENCES USERS (id),
-    personne_id INT REFERENCES PERSONNE (id),
-    PRIMARY KEY (user_id, personne_id)
 );
 
 -- create roles in the application 
@@ -39,7 +27,7 @@ CREATE TABLE USER_ROLES (
 -- create groups that will contain shared accounts
 CREATE TABLE GROUPS (
     id SERIAL PRIMARY KEY,
-    unique_id BIGINT UNIQUE NOT NULL,
+    uid BIGINT UNIQUE NOT NULL,
     name VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255),
     group_description VARCHAR(255)
