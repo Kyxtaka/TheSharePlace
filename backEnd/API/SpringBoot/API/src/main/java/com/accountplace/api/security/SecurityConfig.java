@@ -86,9 +86,9 @@ public class SecurityConfig implements WebMvcConfigurer  {
                                 new HttpSessionSecurityContextRepository()
                         ))
                 )
-                .requiresChannel(channel -> channel
-                        .anyRequest().requiresSecure()
-                )
+//                .requiresChannel(channel -> channel
+//                        .anyRequest().requiresSecure()
+//                )
                 .httpBasic(Customizer.withDefaults());
         return http.build();
     }
