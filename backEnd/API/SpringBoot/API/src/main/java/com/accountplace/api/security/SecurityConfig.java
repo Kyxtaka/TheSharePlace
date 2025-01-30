@@ -44,6 +44,11 @@ public class SecurityConfig implements WebMvcConfigurer  {
         this.authEntryPoint = authEntryPoint;
     }
 
+    /**
+     * Configures CORS mappings to allow specific origins and HTTP methods.
+     *
+     * @param registry The CorsRegistry to configure CORS settings.
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -56,6 +61,14 @@ public class SecurityConfig implements WebMvcConfigurer  {
                 .allowCredentials(true);
     }
 
+    /**
+     * Configures HTTP security settings including session management,
+     * authentication and authorization settings, and JWT filtering.
+     *
+     * @param http The HttpSecurity object used to configure security.
+     * @return The configured SecurityFilterChain.
+     * @throws Exception If an error occurs during configuration.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -93,18 +106,34 @@ public class SecurityConfig implements WebMvcConfigurer  {
         return http.build();
     }
 
+    /**
+     * Provides the JWT authentication filter bean.
+     *
+     * @return The JWTAuthenticationFilter bean.
+     * @throws Exception If an error occurs during the creation of the filter.
+     */
     // Inject JWT Authentication Filter
     @Bean
     public JWTAuthenticationFilter jwtAuthenticationFilter() throws Exception {
         return new JWTAuthenticationFilter();
     }
 
+    /**
+     * Provides a password encoder using BCrypt for hashing passwords.
+     *
+     * @return A BCryptPasswordEncoder bean.
+     */
     // Inject PasswordEncoder that use BCCryptPassword
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Provides a CSRF token repository using cookies for CSRF protection.
+     *
+     * @return A CookieCsrfTokenRepository for CSRF protection.
+     */
     //injection csrfTokenRepository for csrf token
     @Bean
     public CsrfTokenRepository csrfTokenRepository() {
@@ -121,6 +150,13 @@ public class SecurityConfig implements WebMvcConfigurer  {
         return repository;
     }
 
+    /**
+     * Provides the AuthenticationManager bean.
+     *
+     * @param authenticationConfiguration The authentication configuration to retrieve the manager.
+     * @return The AuthenticationManager bean.
+     * @throws Exception If an error occurs during the creation of the manager.
+     */
     // Inject Authentication Manager
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
