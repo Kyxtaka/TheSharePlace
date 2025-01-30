@@ -22,6 +22,18 @@ BEFORE INSERT ON USERS
 FOR EACH ROW
 EXECUTE FUNCTION check_user_exists();
 
+/**
+*   Function to check if a username and mail already exists in the USERS table
+*   @param check_username: the username to check
+*   @param check_mail: the mail to check
+*   @return: true if the username and mail exists, false otherwise  ==> value id "f" for false and "t" for true
+*/
+CREATE OR REPLACE FUNCTION check_username_mail_exists(check_username VARCHAR(255), check_mail VARCHAR(255)) RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (SELECT 1 FROM USERS WHERE USERS.username = check_username AND USERS.mail = check_mail);
+END;
+$$ LANGUAGE plpgsql;
+
 ----------------------------------------------------------- Function and trigger for GROUPS table ------------------------------------------------------------------------
 /**
 *  This is a trigger function that will be called before inserting a new group in the GROUPS table 
