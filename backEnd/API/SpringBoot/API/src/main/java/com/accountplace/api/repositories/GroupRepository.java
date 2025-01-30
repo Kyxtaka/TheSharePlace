@@ -10,8 +10,19 @@ import java.util.List;
 
 @Repository
 public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
+
+    /**
+     * Search every group who contains a given name in their name
+     * @param name String sequance to match with groups names
+     * @return List<GroupEntity> List of every group that contain 'name' in their name
+     */
     @Query("SELECT G FROM GroupEntity G WHERE G.name LIKE %:name% ")
     List<GroupEntity> findByName(@Param("name") String name);
 
+    /**
+     * Check if given uid refers to an actual group
+     * @param unique_id Long
+     * @return boolean "true" if the given uid match with an actual group, "false" if not
+     */
     boolean existsByUID(Long unique_id);
 }
