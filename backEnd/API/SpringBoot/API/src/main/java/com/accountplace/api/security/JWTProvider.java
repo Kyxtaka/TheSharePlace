@@ -10,7 +10,13 @@ import java.util.Date;
 @Component
 public class JWTProvider {
 
-    // Token Generator
+    /**
+     * Generates a JWT token for the given authentication object.
+     * The token contains the username, issued at date, and expiration date.
+     *
+     * @param authentication The authentication object containing the user's details.
+     * @return A JWT token as a String.
+     */
     public String generateToken(Authentication authentication) {
         String username = authentication.getName();
         Date currentDate = new Date();
@@ -23,7 +29,12 @@ public class JWTProvider {
                 .compact();
     }
 
-    //Username extractor
+    /**
+     * Extracts the username from the given JWT token.
+     *
+     * @param token The JWT token from which the username will be extracted.
+     * @return The username as a String.
+     */
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(SecurityConstants.JWT_SECRET) // Use the Key object for signature verification
@@ -34,7 +45,13 @@ public class JWTProvider {
         return claims.getSubject();
     }
 
-    //token validator
+    /**
+     * Validates the given JWT token by checking its signature and expiration.
+     *
+     * @param token The JWT token to be validated.
+     * @return True if the token is valid, otherwise false.
+     * @throws AuthenticationCredentialsNotFoundException If the token is invalid or expired.
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser()

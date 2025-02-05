@@ -9,6 +9,7 @@ import com.accountplace.api.dto.register.RegisterUserBodyDTO;
 import com.accountplace.api.repositories.RoleRepository;
 import com.accountplace.api.repositories.UserRepository;
 import com.accountplace.api.security.JWTProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.accountplace.api.tools.NetworkToolsLib;
 
 import java.util.Collections;
 import java.util.Map;
@@ -67,12 +69,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto, HttpServletRequest request){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(),
                         loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtProvider.generateToken(authentication);
+        System.out.println("got from Ip address: "+NetworkToolsLib.getClientIpAddress(request));
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
     }
 
