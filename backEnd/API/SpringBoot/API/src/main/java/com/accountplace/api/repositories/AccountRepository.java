@@ -7,9 +7,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<AccountEntity, Integer> {
+
+    /**
+     *
+     * @param integer must not be {@literal null}.
+     * @return accountEntity if an account is found in the database
+     */
+    Optional<AccountEntity> findById(int integer);
 
     /**
      * Get every account of a certain group

@@ -1,15 +1,13 @@
-package com.accountplace.api.dto.review;
+package com.accountplace.api.dto.crud.update;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-/**
- * Data Transfer Object (DTO) representing a platform.
- * This class encapsulates the details of a platform, including its ID, name, URL, and image reference.
- */
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
-public class PlatformDto {
-
+public class PlatformUpdateDTO implements Serializable {
     /**
      * The unique identifier for the platform.
      */

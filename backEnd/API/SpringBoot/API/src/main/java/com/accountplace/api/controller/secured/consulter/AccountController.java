@@ -1,9 +1,7 @@
-package com.accountplace.api.controller.consulter;
+package com.accountplace.api.controller.secured.consulter;
 
-import com.accountplace.api.dto.register.RegisterAccountBodyDTO;
+import com.accountplace.api.dto.requestBody.register.RegisterAccountBodyDTO;
 import com.accountplace.api.entity.AccountEntity;
-import com.accountplace.api.dto.review.AccountDTO;
-import com.accountplace.api.repositories.AccountRepository;
 import com.accountplace.api.security.CryptoUtils;
 import com.accountplace.api.security.SecurityConstants;
 import com.accountplace.api.service.AccountService;

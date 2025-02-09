@@ -1,16 +1,15 @@
 package com.accountplace.api.service;
 
 import com.accountplace.api.entity.AccountEntity;
-import com.accountplace.api.dto.review.AccountDTO;
 import com.accountplace.api.repositories.AccountRepository;
 import com.accountplace.api.security.CryptoUtils;
 import com.accountplace.api.security.SecurityConstants;
 import com.accountplace.api.tools.Email;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -185,12 +184,12 @@ public class AccountService {
     /**
      * Deletes an account by its ID.
      *
-     * @param id The ID of the account to delete.
+     * @param accountDTO The ID of the account to delete.
      * @return A success message indicating the account was deleted.
      */
-    public String deleteAccountById(Integer id) {
-        accountRepository.deleteById(id);
-        return "Account deleted with id: " + id + " has been deleted successfully";
+    public String deleteAccountById(AccountDTO accountDTO) {
+        accountRepository.deleteById(accountDTO.getId());
+        return "Account deleted with id: " + accountDTO.getId() + " has been deleted successfully";
     }
 
     /**
@@ -212,5 +211,25 @@ public class AccountService {
                 groupService.findById(accountEntity.getGroup_id()),
                 plateformService.findById(accountEntity.getPlatform_id())
         );
+    }
+
+    /**
+     * Converts an accountDTO to an entity, if DTO reference to an existing entity this will return
+     * the existing entity, create a new one if not
+     * @param accountDTO actual DTO created from a controller
+     * @return an account entity
+     * @throws Exception
+     */
+    private AccountEntity convertToEntity(AccountDTO accountDTO) throws Exception {
+        Integer a2f = (accountDTO.isA2f()) ? 1 : 0;
+        Optional<AccountEntity> accountEntity = accountRepository.findById(accountDTO.getId());
+        return accountEntity.orElseGet(() -> new AccountEntity(
+                accountDTO.getEmail().getMailAddress(),
+                accountDTO.getUsername(),
+                accountDTO.getUsername(),
+                a2f,
+                accountDTO.getPlatform().getPlateformId(),
+                accountDTO.getGroup().getId()
+        ));
     }
 }

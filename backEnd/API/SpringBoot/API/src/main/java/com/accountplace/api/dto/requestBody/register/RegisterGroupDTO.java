@@ -1,4 +1,4 @@
-package com.accountplace.api.dto.register;
+package com.accountplace.api.dto.requestBody.register;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

@@ -1,8 +1,8 @@
-package com.accountplace.api.controller.consulter;
+package com.accountplace.api.controller.secured.consulter;
 
-import com.accountplace.api.controller.AuthController;
-import com.accountplace.api.dto.register.RegisterUserBodyDTO;
-import com.accountplace.api.dto.review.UserDto;
+import com.accountplace.api.controller.open.AuthController;
+import com.accountplace.api.dto.requestBody.register.RegisterUserBodyDTO;
+import com.accountplace.api.dto.crud.pub.UserDto;
 import com.accountplace.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +36,7 @@ public class UserController {
     @GetMapping("/all")
     public ResponseEntity<List<UserDto>> getAllUser() {
         try {
-            return  ResponseEntity.ok().body(userService.findAll());
+                return  ResponseEntity.ok().body(userService.findAll());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }

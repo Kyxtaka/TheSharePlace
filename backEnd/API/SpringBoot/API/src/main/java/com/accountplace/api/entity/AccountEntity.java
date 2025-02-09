@@ -32,4 +32,12 @@ public class AccountEntity implements Serializable {
 
     @Column(name = "group_id", nullable = false)
     private Integer group_id;
+
+    public AccountEntity(
+            String mail,
+            String username,
+            String password,
+            Integer a2f,
+            Integer platform_id,
+            Integer group_id) {}
 }

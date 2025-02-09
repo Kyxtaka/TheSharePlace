@@ -1,4 +1,4 @@
-package com.accountplace.api.dto.register;
+package com.accountplace.api.dto.requestBody.register;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.accountplace.api.dto.auth;
+package com.accountplace.api.dto.requestBody.auth;
 
 import lombok.Data;
 

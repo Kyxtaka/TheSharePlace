@@ -1,7 +1,6 @@
-package com.accountplace.api.controller.consulter;
+package com.accountplace.api.controller.secured.consulter;
 
-import com.accountplace.api.dto.register.RegisterGroupDTO;
-import com.accountplace.api.dto.review.GroupDto;
+import com.accountplace.api.dto.requestBody.register.RegisterGroupDTO;
 import com.accountplace.api.entity.GroupEntity;
 import com.accountplace.api.repositories.GroupRepository;
 import com.accountplace.api.service.GroupService;

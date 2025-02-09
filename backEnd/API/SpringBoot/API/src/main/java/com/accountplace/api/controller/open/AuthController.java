@@ -1,11 +1,11 @@
-package com.accountplace.api.controller;
+package com.accountplace.api.controller.open;
 
 
 import com.accountplace.api.entity.Role;
 import com.accountplace.api.entity.UserEntity;
-import com.accountplace.api.dto.reponse.AuthResponseDto;
-import com.accountplace.api.dto.auth.LoginDto;
-import com.accountplace.api.dto.register.RegisterUserBodyDTO;
+import com.accountplace.api.dto.response.auth.AuthResponseDto;
+import com.accountplace.api.dto.requestBody.auth.LoginDto;
+import com.accountplace.api.dto.requestBody.register.RegisterUserBodyDTO;
 import com.accountplace.api.repositories.RoleRepository;
 import com.accountplace.api.repositories.UserRepository;
 import com.accountplace.api.security.JWTProvider;

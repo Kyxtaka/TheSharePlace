@@ -1,20 +1,20 @@
-package com.accountplace.api.dto.review;
+package com.accountplace.api.dto.crud.update;
 
 import com.accountplace.api.tools.Email;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import com.accountplace.api.dto.crud.update.PublicGroupDTO;
+import com.accountplace.api.dto.crud.update.PublicPlatformDTO;
+
+import java.io.Serializable;
 
 /**
  * Data Transfer Object (DTO) representing an account.
  * This class encapsulates the details of a shared accounts, including personal information and associated group/platform.
  */
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @ToString
-public class AccountDTO {
+public class AccountUpdateDTO implements Serializable {
 
     /**
      * The unique identifier of the account.
@@ -28,7 +28,7 @@ public class AccountDTO {
 
     /**
      * The password associated with the account.
-     * In production, ensure that this field is securely handled and stored.
+     * Can only be viewed for by logged user
      */
     private String password;
 
@@ -45,10 +45,10 @@ public class AccountDTO {
     /**
      * The group associated with the account.
      */
-    private GroupDto group;
+    private PublicGroupDTO group;
 
     /**
      * The platform associated with the account.
      */
-    private PlatformDto platform;
+    private PublicPlatformDTO platform;
 }

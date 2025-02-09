@@ -1,4 +1,4 @@
-package com.accountplace.api.dto.review;
+package com.accountplace.api.dto.crud.pub;
 
 import com.accountplace.api.entity.Role;
 import com.accountplace.api.tools.Email;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 @Data
 @AllArgsConstructor
-public class UserDto {
+public class PublicUserDTO {
 
     /**
      * The unique identifier for the user.
@@ -46,9 +46,4 @@ public class UserDto {
      */
     private List<Role> roles;
 
-    /**
-     * The list of groups the user is a member of.
-     * A user can belong to multiple groups, each group may represent a team or organization.
-     */
-    private List<GroupDto> groups;
 }

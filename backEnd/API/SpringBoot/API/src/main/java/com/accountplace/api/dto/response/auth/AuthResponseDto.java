@@ -1,4 +1,4 @@
-package com.accountplace.api.dto.reponse;
+package com.accountplace.api.dto.response.auth;
 
 import lombok.Getter;
 

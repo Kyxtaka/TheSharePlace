@@ -2,9 +2,8 @@ package com.accountplace.api.service;
 
 import com.accountplace.api.entity.GroupEntity;
 import com.accountplace.api.entity.UserEntity;
-import com.accountplace.api.dto.review.UserDto;
+import com.accountplace.api.dto.crud.pub.UserDto;
 import com.accountplace.api.tools.Email;
-import com.accountplace.api.dto.review.GroupDto;
 import com.accountplace.api.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

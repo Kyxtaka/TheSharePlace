@@ -1,9 +1,8 @@
-package com.accountplace.api.controller.consulter;
+package com.accountplace.api.controller.secured.consulter;
 
 
-import com.accountplace.api.dto.register.RegisterPlatformDTO;
+import com.accountplace.api.dto.requestBody.register.RegisterPlatformDTO;
 import com.accountplace.api.entity.PlatformEntity;
-import com.accountplace.api.dto.review.PlatformDto;
 import com.accountplace.api.service.PlateformService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

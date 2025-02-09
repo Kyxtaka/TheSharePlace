@@ -1,16 +1,12 @@
 package com.accountplace.api.service;
 
 import com.accountplace.api.entity.PlatformEntity;
-import com.accountplace.api.dto.review.PlatformDto;
 import com.accountplace.api.repositories.PlateformRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**

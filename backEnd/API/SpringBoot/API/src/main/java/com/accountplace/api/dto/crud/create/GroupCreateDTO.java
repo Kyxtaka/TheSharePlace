@@ -1,6 +1,10 @@
-package com.accountplace.api.dto.review;
+package com.accountplace.api.dto.crud.create;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
+
+import java.io.Serializable;
 
 /**
  * Data Transfer Object (DTO) representing a group.
@@ -8,13 +12,8 @@ import lombok.*;
  */
 @Data
 @AllArgsConstructor
-public class GroupDto {
-
-    /**
-     * The unique identifier for the group.
-     */
-    private Integer id;
-
+@ToString
+public class GroupCreateDTO implements Serializable {
     /**
      * The unique UID of the group.
      * This can be used to identify the group across different systems or services.
@@ -30,9 +29,4 @@ public class GroupDto {
      * A brief description of the group.
      */
     private String description;
-
-    /**
-     * The password associated with the group, if required.
-     */
-    private String password;
 }
