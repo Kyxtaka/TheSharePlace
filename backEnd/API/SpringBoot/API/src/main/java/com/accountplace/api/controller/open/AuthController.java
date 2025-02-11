@@ -1,10 +1,10 @@
 package com.accountplace.api.controller.open;
 
 
-import com.accountplace.api.entity.Role;
+import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.entity.UserEntity;
 import com.accountplace.api.dto.response.auth.AuthResponseDto;
-import com.accountplace.api.dto.requestBody.auth.LoginDto;
+import com.accountplace.api.dto.requestBody.auth.LoginDTO;
 import com.accountplace.api.dto.requestBody.register.RegisterUserBodyDTO;
 import com.accountplace.api.repositories.RoleRepository;
 import com.accountplace.api.repositories.UserRepository;
@@ -62,19 +62,21 @@ public class AuthController {
         userEntity.setFirstname(registerUserBodyDTO.getFirstname());
         userEntity.setLastname(registerUserBodyDTO.getLastname());
         userEntity.setPassword(passwordEncoder.encode(registerUserBodyDTO.getPassword()));
-        Role roles = roleRepository.findByName("USER").get();
-        userEntity.setRoles(Collections.singletonList(roles));
+        RoleEntity roles = roleRepository.findByName("USER").get();
+        userEntity.setRoleEntities(Collections.singletonList(roles));
         userRepository.save(userEntity);
         return ResponseEntity.ok(Collections.singletonMap("message", "User registered successfully"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto, HttpServletRequest request){
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDTO loginDto, HttpServletRequest request){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(),
                         loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtProvider.generateToken(authentication);
+        String rawIP = NetworkToolsLib.getClientIpAddress(request);
+        String userAgent = NetworkToolsLib.getUserAgent(request);
+        String token = jwtProvider.generateToken(authentication, rawIP, userAgent);
         System.out.println("got from Ip address: "+NetworkToolsLib.getClientIpAddress(request));
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
     }

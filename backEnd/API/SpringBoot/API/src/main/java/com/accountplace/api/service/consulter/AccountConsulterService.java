@@ -1,5 +1,6 @@
-package com.accountplace.api.service;
+package com.accountplace.api.service.consulter;
 
+import com.accountplace.api.dto.crud.pub.PublicAccountDTO;
 import com.accountplace.api.entity.AccountEntity;
 import com.accountplace.api.repositories.AccountRepository;
 import com.accountplace.api.security.CryptoUtils;
@@ -17,32 +18,32 @@ import java.util.stream.Collectors;
  * It provides methods for creating, updating, deleting, and retrieving account entities.
  */
 @Service
-public class AccountService {
+public class AccountConsulterService {
 
     // Repositories
     private final AccountRepository accountRepository;
-    private final GroupService groupService;
-    private final PlateformService plateformService;
+    private final GroupConsulterService groupConsulterService;
+    private final PlatformConsulterService platformConsulterService;
     private final CryptoUtils cryptoUtils;
 
     /**
      * Constructor injection for AccountService dependencies.
      *
      * @param accountRepository The repository for account-related database operations.
-     * @param groupService The service for managing groups.
-     * @param plateformService The service for managing platforms.
+     * @param groupConsulterService The service for managing groups.
+     * @param platformConsulterService The service for managing platforms.
      * @param cryptoUtils The utility class for cryptographic operations.
      */
     @Autowired
-    private AccountService (
+    private AccountConsulterService(
             AccountRepository accountRepository,
-            GroupService groupService,
-            PlateformService plateformService,
+            GroupConsulterService groupConsulterService,
+            PlatformConsulterService platformConsulterService,
             CryptoUtils cryptoUtils
     ) {
         this.accountRepository = accountRepository;
-        this.groupService = groupService;
-        this.plateformService = plateformService;
+        this.groupConsulterService = groupConsulterService;
+        this.platformConsulterService = platformConsulterService;
         this.cryptoUtils = cryptoUtils;
     }
 
@@ -59,9 +60,9 @@ public class AccountService {
     /**
      * Retrieves all accounts and converts them to DTO format.
      *
-     * @return A list of AccountDTO objects representing all accounts.
+     * @return A list of com.accountplace.api.dto.crud.pub.PublicAccountDTO objects representing all accounts.
      */
-    public List<AccountDTO> listAll() {
+    public List<PublicAccountDTO> listAll() {
         List<AccountEntity> lst =  accountRepository.findAll();
         return lst.stream()
                 .map(entity -> {
@@ -78,22 +79,12 @@ public class AccountService {
      * Finds an account by its ID and returns it as a DTO.
      *
      * @param id The ID of the account to retrieve.
-     * @return The AccountDTO representing the account.
+     * @return The PublicAccountDTO representing the account.
      * @throws Exception if the account cannot be found.
      */
-    public AccountDTO findById(Integer id) throws Exception {
+    public PublicAccountDTO findById(Integer id) throws Exception {
         AccountEntity account = accountRepository.findById(id).orElseThrow( () -> new RuntimeException("Account not found"));
         return this.convertToDto(account);
-    }
-
-    /**
-     * Retrieves an account entity by its ID.
-     *
-     * @param id The ID of the account to retrieve.
-     * @return The AccountEntity object representing the account.
-     */
-    public AccountEntity getEntity(Integer id) {
-        return accountRepository.findById(id).orElseThrow( () -> new RuntimeException("Account not found"));
     }
 
     /**
@@ -109,9 +100,9 @@ public class AccountService {
      * Searches for accounts based on a group ID and returns them as DTOs.
      *
      * @param groupId The group ID to search for.
-     * @return A list of AccountDTOs associated with the given group ID.
+     * @return A list of PublicAccountDTOs associated with the given group ID.
      */
-    public List<AccountDTO> searchByGroupId(Integer groupId) {
+    public List<PublicAccountDTO> searchByGroupId(Integer groupId) {
         List<AccountEntity> lst =  accountRepository.listByGroupId(groupId);
         return lst.stream()
                 .map(entity -> {
@@ -129,9 +120,9 @@ public class AccountService {
      *
      * @param groupId The group ID to search for.
      * @param plateformId The platform ID to search for.
-     * @return A list of AccountDTOs associated with the given group and platform IDs.
+     * @return A list of PublicAccountDTOs associated with the given group and platform IDs.
      */
-    public List<AccountDTO> searchByGroupAndPlatformId(Integer groupId, Integer plateformId) {
+    public List<PublicAccountDTO> searchByGroupAndPlatformId(Integer groupId, Integer plateformId) {
         List<AccountEntity> lst = accountRepository.listByGroupAndPlateformId(groupId, plateformId);
         return lst.stream()
                 .map(entity -> {
@@ -148,9 +139,9 @@ public class AccountService {
      * Retrieves all accounts associated with a specific email and returns them as DTOs.
      *
      * @param mail The email to search for.
-     * @return A list of AccountDTOs associated with the given email.
+     * @return A list of PublicAccountDTOs associated with the given email.
      */
-    public List<AccountDTO> listAllByEmail(Email mail) {
+    public List<PublicAccountDTO> listAllByEmail(Email mail) {
         List<AccountEntity> lst = accountRepository.listByMail(mail.getMailAddress());
         return lst.stream()
                 .map(entity -> {
@@ -164,72 +155,25 @@ public class AccountService {
     }
 
     /**
-     * Updates an existing account by its ID with the provided account data.
-     *
-     * @param id The ID of the account to update.
-     * @param accountEntity The account entity containing updated data.
-     * @return The updated account entity.
-     */
-    public AccountEntity update(Integer id, AccountEntity accountEntity) {
-        return accountRepository.findById(id).map(credential -> {
-            credential.setUsername(accountEntity.getUsername());
-            credential.setMail(accountEntity.getMail());
-            credential.setPassword(accountEntity.getPassword());
-            credential.setA2f(accountEntity.getA2f());
-            credential.setPlatform_id(accountEntity.getPlatform_id());
-            return accountRepository.save(credential);
-        }).orElseThrow(() -> new RuntimeException("Account not found"));
-    }
-
-    /**
-     * Deletes an account by its ID.
-     *
-     * @param accountDTO The ID of the account to delete.
-     * @return A success message indicating the account was deleted.
-     */
-    public String deleteAccountById(AccountDTO accountDTO) {
-        accountRepository.deleteById(accountDTO.getId());
-        return "Account deleted with id: " + accountDTO.getId() + " has been deleted successfully";
-    }
-
-    /**
-     * Converts an AccountEntity to an AccountDTO.
+     * Converts an AccountEntity to an PublicAccountDTO.
      *
      * @param accountEntity The AccountEntity to convert.
-     * @return The AccountDTO representing the account.
+     * @return The PublicAccountDTO representing the account.
      * @throws Exception if there are issues during conversion.
      */
-    private AccountDTO convertToDto(AccountEntity accountEntity) throws Exception {
+    private PublicAccountDTO convertToDto(AccountEntity accountEntity) throws Exception {
         boolean a2f = accountEntity.getA2f() == 1;
         Email mail = new Email(accountEntity.getMail());
-        return new AccountDTO(
+        return new PublicAccountDTO(
                 accountEntity.getId(),
                 accountEntity.getUsername(),
                 this.cryptoUtils.decrypt(accountEntity.getPassword(), SecurityConstants.AES_SECRET_KEY),
                 mail,
                 a2f,
-                groupService.findById(accountEntity.getGroup_id()),
-                plateformService.findById(accountEntity.getPlatform_id())
+                groupConsulterService.findById(accountEntity.getGroup_id()),
+                platformConsulterService.findById(accountEntity.getPlatform_id())
         );
     }
 
-    /**
-     * Converts an accountDTO to an entity, if DTO reference to an existing entity this will return
-     * the existing entity, create a new one if not
-     * @param accountDTO actual DTO created from a controller
-     * @return an account entity
-     * @throws Exception
-     */
-    private AccountEntity convertToEntity(AccountDTO accountDTO) throws Exception {
-        Integer a2f = (accountDTO.isA2f()) ? 1 : 0;
-        Optional<AccountEntity> accountEntity = accountRepository.findById(accountDTO.getId());
-        return accountEntity.orElseGet(() -> new AccountEntity(
-                accountDTO.getEmail().getMailAddress(),
-                accountDTO.getUsername(),
-                accountDTO.getUsername(),
-                a2f,
-                accountDTO.getPlatform().getPlateformId(),
-                accountDTO.getGroup().getId()
-        ));
-    }
+
 }

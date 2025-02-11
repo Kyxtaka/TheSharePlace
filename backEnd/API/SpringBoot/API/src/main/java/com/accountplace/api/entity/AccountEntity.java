@@ -39,5 +39,12 @@ public class AccountEntity implements Serializable {
             String password,
             Integer a2f,
             Integer platform_id,
-            Integer group_id) {}
+            Integer group_id) {
+        this.mail = mail;
+        this.username = username;
+        this.password = password;
+        this.a2f = a2f;
+        this.platform_id = platform_id;
+        this.group_id = group_id;
+    }
 }

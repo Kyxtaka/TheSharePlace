@@ -28,4 +28,11 @@ public class GroupEntity implements Serializable {
     @Column(name = "group_description")
     private String group_description;
 
+    public GroupEntity(Long UID, String name, String password, String group_description) {
+        this.UID = UID;
+        this.name = name;
+        this.password = password;
+        this.group_description = group_description;
+    }
+
 }

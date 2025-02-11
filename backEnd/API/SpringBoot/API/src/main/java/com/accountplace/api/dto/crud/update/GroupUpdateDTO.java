@@ -25,6 +25,11 @@ public class GroupUpdateDTO implements Serializable {
     private String name;
 
     /**
+     * The password of the group.
+     */
+    private String password;
+
+    /**
      * A brief description of the group.
      */
     private String description;

@@ -1,6 +1,6 @@
 package com.accountplace.api.security;
 
-import com.accountplace.api.entity.Role;
+import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.entity.UserEntity;
 import com.accountplace.api.repositories.UserRepository;
 import com.accountplace.api.tools.Email;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 /**
  * Custom implementation of the Spring Security UserDetailsService interface.
- * This class is responsible for loading user details by username or email and mapping roles to authorities.
+ * This class is responsible for loading user details by identifier or email and mapping roles to authorities.
  */
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -36,41 +36,41 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Loads user details by username or email.
-     * It checks if the provided username is an email or a username and fetches the user accordingly.
+     * Loads user details by identifier or email.
+     * It checks if the provided identifier is an email or a identifier and fetches the user accordingly.
      *
-     * @param username The username or email of the user.
+     * @param identifier The identifier or email of the user.
      * @return A UserDetails object containing the user's details.
-     * @throws UsernameNotFoundException If no user is found with the provided username or email.
+     * @throws UsernameNotFoundException If no user is found with the provided identifier or email.
      */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Email tmpEmail = new Email(username);
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+        Email tmpEmail = new Email(identifier);
         boolean isEmail = tmpEmail.isValid();
         UserEntity user = null;
 
-        // Fetch user by email if valid, otherwise by username
+        // Fetch user by email if valid, otherwise by identifier
         if (isEmail) {
-            user = userRepository.findByEmail(username).orElseThrow(
-                    () -> new UsernameNotFoundException("username or email not found"));
+            user = userRepository.findByEmail(identifier).orElseThrow(
+                    () -> new UsernameNotFoundException("identifier or email not found"));
         } else {
-            user = userRepository.findByUsername(username).orElseThrow(
-                    () -> new UsernameNotFoundException("username or email not found"));
+            user = userRepository.findByUsername(identifier).orElseThrow(
+                    () -> new UsernameNotFoundException("identifier or email not found"));
         }
 
         // Return a UserDetails object with the user’s credentials and authorities
-        return new User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+        return new User(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoleEntities()));
     }
 
     /**
      * Maps the list of roles to a collection of GrantedAuthority.
      * Each role is prefixed with "ROLE_" as per Spring Security conventions.
      *
-     * @param roles The list of roles assigned to the user.
+     * @param roleEntities The list of roles assigned to the user.
      * @return A collection of GrantedAuthority representing the user's roles.
      */
-    private Collection<GrantedAuthority> mapRolesToAuthorities(List<Role> roles) {
-        return roles.stream()
+    private Collection<GrantedAuthority> mapRolesToAuthorities(List<RoleEntity> roleEntities) {
+        return roleEntities.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList());
     }

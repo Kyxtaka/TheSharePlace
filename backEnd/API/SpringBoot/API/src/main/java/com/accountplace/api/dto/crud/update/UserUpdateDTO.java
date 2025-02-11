@@ -1,6 +1,6 @@
 package com.accountplace.api.dto.crud.update;
 
-import com.accountplace.api.entity.Role;
+import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.tools.Email;
 
 import java.io.Serializable;
@@ -38,5 +38,5 @@ public class UserUpdateDTO implements Serializable {
      * The list of roles assigned to the user.
      * Each role defines the user's permissions and access levels.
      */
-    private List<Role> roles;
+    private List<RoleEntity> roleEntities;
 }

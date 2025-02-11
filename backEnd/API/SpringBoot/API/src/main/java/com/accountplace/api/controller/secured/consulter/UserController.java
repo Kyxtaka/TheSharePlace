@@ -1,12 +1,14 @@
 package com.accountplace.api.controller.secured.consulter;
 
 import com.accountplace.api.controller.open.AuthController;
+import com.accountplace.api.dto.crud.pub.PublicUserDTO;
 import com.accountplace.api.dto.requestBody.register.RegisterUserBodyDTO;
-import com.accountplace.api.dto.crud.pub.UserDto;
-import com.accountplace.api.service.UserService;
+import com.accountplace.api.service.consulter.UserConsulterService;
+import com.accountplace.api.service.crud.UserCrudService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -19,13 +21,15 @@ import java.util.Map;
 @RequestMapping("/api/data/user")
 public class UserController {
 
-    private final UserService userService;
+    private final UserConsulterService userConsulterService;
+    private final UserCrudService userCrudService;
     private final AuthController authController;
 
     @Autowired
-    private UserController(UserService userService,AuthController authController) {
-        this.userService = userService;
+    private UserController(UserConsulterService userConsulterService, AuthController authController, UserCrudService userCrudService) {
+        this.userConsulterService = userConsulterService;
         this.authController = authController;
+        this.userCrudService = userCrudService;
     }
 
     @GetMapping("/infos")
@@ -34,27 +38,29 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUser() {
+    public ResponseEntity<List<PublicUserDTO>> getAllUser() {
         try {
-                return  ResponseEntity.ok().body(userService.findAll());
+            return  ResponseEntity.ok().body(userConsulterService.findAll());
+        } catch (AuthenticationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.emptyList());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/find/{filter}/{value}")
-    public ResponseEntity<UserDto> getUserDtoUsername(@PathVariable("filter") String filter, @PathVariable("value") String search_query) {
+    public ResponseEntity<PublicUserDTO> getUserDtoUsername(@PathVariable("filter") String filter, @PathVariable("value") String search_query) {
         try {
             switch (filter) {
                 case "id" -> {
                     Integer id = Integer.valueOf(search_query);
-                    return ResponseEntity.ok(userService.findById(id));
+                    return ResponseEntity.ok(userConsulterService.findById(id));
                 }
                 case "username" -> {
-                    return ResponseEntity.ok(userService.findByUsername(search_query));
+                    return ResponseEntity.ok(userConsulterService.findByUsername(search_query));
                 }
                 case "email" -> {
-                    return ResponseEntity.ok(userService.findByEmail(search_query));
+                    return ResponseEntity.ok(userConsulterService.findByEmail(search_query));
                 }
             }
         } catch (Exception e) {
@@ -66,37 +72,21 @@ public class UserController {
     @GetMapping("count")
     public ResponseEntity<Long> getUserCount() {
         try {
-            return ResponseEntity.ok(userService.countAccount());
+            return ResponseEntity.ok(userConsulterService.countAccount());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    @PostMapping("create")
-    public ResponseEntity<Map<String, String>> createAccount(@RequestBody RegisterUserBodyDTO bodyDTO) {
-        return authController.registerUser(bodyDTO);
     }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, String>> deleteUser(@PathVariable("id") Integer id) {
         try {
-            String result =  userService.deleteAccountById(id);
+            String result =  userCrudService.delete(id);
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("message", result));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
-//    @PutMapping("/update")
-//    public UserEntity updateUser(@RequestParam("id") int id, @RequestBody  userEntity) {
-//        UserEntity response = null;
-//        try {
-//            response = userService.updateAccount(id, userEntity);
-//        } catch (Exception e) {
-//            ResponseEntity.notFound().build();
-//        }
-//        return response;
-//    }
 
 }
 

@@ -1,14 +1,16 @@
-package com.accountplace.api.service;
+package com.accountplace.api.service.consulter;
 
+import com.accountplace.api.dto.crud.pub.PublicRoleDTO;
+import com.accountplace.api.dto.crud.pub.PublicUserDTO;
+import com.accountplace.api.dto.crud.update.PublicGroupDTO;
 import com.accountplace.api.entity.GroupEntity;
+import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.entity.UserEntity;
-import com.accountplace.api.dto.crud.pub.UserDto;
 import com.accountplace.api.tools.Email;
 import com.accountplace.api.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,21 +20,21 @@ import java.util.stream.Collectors;
  * It provides methods for creating, updating, deleting, and retrieving user entities.
  */
 @Service
-public class UserService {
+public class UserConsulterService {
 
     private final UserRepository userRepository;
-    private final GroupService groupService;
+    private final GroupConsulterService groupConsulterService;
 
     /**
      * Constructor injection for UserService dependencies.
      *
      * @param userRepository The repository for user-related database operations.
-     * @param groupService The service for handling group-related operations.
+     * @param groupConsulterService The service for handling group-related operations.
      */
     @Autowired
-    public UserService(UserRepository userRepository, GroupService groupService) {
+    public UserConsulterService(UserRepository userRepository, GroupConsulterService groupConsulterService) {
         this.userRepository = userRepository;
-        this.groupService = groupService;
+        this.groupConsulterService = groupConsulterService;
     }
 
     /**
@@ -49,20 +51,9 @@ public class UserService {
      *
      * @return A list of UserDto objects representing all users.
      */
-    public List<UserDto> findAll() {
+    public List<PublicUserDTO> findAll() {
         List<UserEntity> users = userRepository.findAll();
         return users.stream().map(this::convertToDto).collect(Collectors.toList());
-    }
-
-    /**
-     * Retrieves a user entity by its ID.
-     *
-     * @param id The ID of the user to retrieve.
-     * @return The UserEntity representing the user.
-     * @throws EntityNotFoundException if the user cannot be found.
-     */
-    public UserEntity getEntity(Integer id) {
-        return userRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     /**
@@ -72,7 +63,7 @@ public class UserService {
      * @return The UserDto representing the user.
      * @throws RuntimeException if the user cannot be found.
      */
-    public UserDto findById(Integer Id) {
+    public PublicUserDTO findById(Integer Id) {
         UserEntity userEntity = userRepository.findById(Id).orElseThrow(() -> new RuntimeException("user not found with id " + Id));
         return convertToDto(userEntity);
     }
@@ -84,7 +75,7 @@ public class UserService {
      * @return The UserDto representing the user.
      * @throws EntityNotFoundException if the user cannot be found.
      */
-    public UserDto findByEmail(String email) {
+    public PublicUserDTO findByEmail(String email) {
         UserEntity userEntity = userRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
         return convertToDto(userEntity);
     }
@@ -96,48 +87,9 @@ public class UserService {
      * @return The UserDto representing the user.
      * @throws RuntimeException if the user cannot be found.
      */
-    public UserDto findByUsername(String username) {
+    public PublicUserDTO findByUsername(String username) {
         UserEntity userEntity = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("user not found with username " + username));
         return convertToDto(userEntity);
-    }
-
-    /**
-     * Creates a new user and saves it to the repository.
-     *
-     * @param userEntity The user entity to be created.
-     * @return The saved user entity.
-     */
-    public UserEntity create(UserEntity userEntity) {
-        return userRepository.save(userEntity);
-    }
-
-    /**
-     * Updates an existing user account by its ID with the provided user data.
-     *
-     * @param id The ID of the user to update.
-     * @param account The user entity containing updated data.
-     * @return The updated user entity.
-     * @throws RuntimeException if the user cannot be found.
-     */
-    public UserEntity updateAccount(Integer id, UserEntity account) {
-        return userRepository.findById(id).map(account1 -> {
-            account1.setUsername(account.getUsername());
-            account1.setPassword(account.getPassword());
-            account1.setEmail(account.getEmail());
-            account1.setRoles(account.getRoles());
-            return userRepository.save(account1);
-        }).orElseThrow(() -> new RuntimeException("Account not found with id " + id));
-    }
-
-    /**
-     * Deletes a user account by its ID.
-     *
-     * @param id The ID of the user to delete.
-     * @return A success message indicating the user was deleted.
-     */
-    public String deleteAccountById(Integer id) {
-        userRepository.deleteById(id);
-        return "Account with id " + id + " has been deleted successfully";
     }
 
     /**
@@ -146,19 +98,23 @@ public class UserService {
      * @param userEntity The UserEntity to convert.
      * @return The UserDto representing the user.
      */
-    private UserDto convertToDto(UserEntity userEntity) {
+    private PublicUserDTO convertToDto(UserEntity userEntity) {
         Email email =  new Email(userEntity.getEmail());
-        List<GroupDto> groups = new ArrayList<>();
-        for (GroupEntity grp: userEntity.getGroups()) {
-            groups.add(groupService.findById(grp.getId()));
+        List<PublicGroupDTO> groups = new ArrayList<>();
+        List<PublicRoleDTO> roles = new ArrayList<>();
+        for (GroupEntity group: userEntity.getGroups()) {
+            groups.add(new PublicGroupDTO(group.getId(), group.getUID(), group.getName(), group.getGroup_description()));
         }
-        return new UserDto(
+        for (RoleEntity role: userEntity.getRoleEntities()) {
+            roles.add(new PublicRoleDTO(role.getId(), role.getName()));
+        }
+        return new PublicUserDTO(
                 userEntity.getId(),
                 userEntity.getUsername(),
                 email,
                 userEntity.getFirstname(),
                 userEntity.getLastname(),
-                userEntity.getRoles(),
+                roles,
                 groups
         );
     }

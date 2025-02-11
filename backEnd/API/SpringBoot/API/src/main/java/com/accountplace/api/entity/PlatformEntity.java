@@ -23,4 +23,10 @@ public class PlatformEntity implements Serializable {
 
     @Column(name = "imgRef", nullable = true)
     private String imgRef;
+
+    public PlatformEntity(String name, String url, String imgRef) {
+        this.name = name;
+        this.url = url;
+        this.imgRef = imgRef;
+    }
 }

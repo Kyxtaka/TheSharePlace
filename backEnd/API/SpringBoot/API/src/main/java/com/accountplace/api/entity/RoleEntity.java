@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Table(name = "ROLES")
 @Data
 @NoArgsConstructor
-public class Role implements Serializable {
+public class RoleEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -18,4 +18,8 @@ public class Role implements Serializable {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    public RoleEntity(String name) {
+        this.name = name;
+    }
 }

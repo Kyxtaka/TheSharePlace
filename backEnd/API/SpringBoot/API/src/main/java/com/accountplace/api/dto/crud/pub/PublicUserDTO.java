@@ -1,6 +1,7 @@
 package com.accountplace.api.dto.crud.pub;
 
-import com.accountplace.api.entity.Role;
+import com.accountplace.api.dto.crud.update.PublicGroupDTO;
+import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.tools.Email;
 import lombok.*;
 
@@ -44,6 +45,12 @@ public class PublicUserDTO {
      * The list of roles assigned to the user.
      * Each role defines the user's permissions and access levels.
      */
-    private List<Role> roles;
+    private List<PublicRoleDTO> rolesDTO;
+
+    /**
+     * The list of groups assigned to the user.
+     * Each groups that the user has access
+     */
+    private List<PublicGroupDTO> groupsDTO;
 
 }

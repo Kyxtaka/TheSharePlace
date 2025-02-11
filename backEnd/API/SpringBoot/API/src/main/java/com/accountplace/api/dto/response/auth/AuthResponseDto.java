@@ -23,10 +23,10 @@ public class AuthResponseDto {
     /**
      * Constructor to create an instance of AuthResponseDto with the provided token.
      *
-     * @param token The authentication token to be returned in the response.
+     * @param accessToken The authentication token to be returned in the response.
      */
-    public AuthResponseDto(String token) {
-        this.accessToken = token;
+    public AuthResponseDto(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     /**

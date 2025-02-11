@@ -1,6 +1,7 @@
 package com.accountplace.api.dto.crud.create;
 
-import com.accountplace.api.entity.Role;
+import com.accountplace.api.dto.crud.pub.PublicRoleDTO;
+import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.tools.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,14 +19,14 @@ public class UserCreateDTO implements Serializable {
     private String username;
 
     /**
-     * The password of the user.
-     */
-    private String password;
-
-    /**
      * The email address of the user.
      */
     private Email email;
+
+    /**
+     * The password of the user.
+     */
+    private String password;
 
     /**
      * The first name of the user.
@@ -37,9 +38,5 @@ public class UserCreateDTO implements Serializable {
      */
     private String lastname;
 
-    /**
-     * The list of roles assigned to the user.
-     * Each role defines the user's permissions and access levels.
-     */
-    private List<Role> roles;
+    private List<PublicRoleDTO> roles;
 }

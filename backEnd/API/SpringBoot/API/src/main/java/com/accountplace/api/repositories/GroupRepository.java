@@ -7,12 +7,20 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<GroupEntity, Integer> {
 
     /**
-     * Search every group who contains a given name in their name
+     * get the group that correspond the id parsed in parameter
+     * @param id
+     * @return
+     */
+    Optional<GroupEntity> findById(int id);
+
+    /**
+     * Search every group who contains a given name  in their name
      * @param name String sequance to match with groups names
      * @return List<GroupEntity> List of every group that contain 'name' in their name
      */

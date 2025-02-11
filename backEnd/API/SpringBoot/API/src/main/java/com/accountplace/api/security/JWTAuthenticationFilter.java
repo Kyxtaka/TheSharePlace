@@ -1,5 +1,6 @@
 package com.accountplace.api.security;
 
+import com.accountplace.api.tools.NetworkToolsLib;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,14 +19,14 @@ import java.io.IOException;
 
 /**
  * Filter responsible for validating and authenticating JWT tokens in incoming HTTP requests.
- * This filter checks if the request contains a valid JWT, extracts the username from it,
+ * This filter checks if the request contains a valid JWT, extracts the identifier from it,
  * loads the corresponding user details, and sets the authentication context for the request.
  */
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JWTProvider tokenGenerator;
+    private JWTProvider jwtProvider;
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -45,48 +46,23 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-
-        // Extract JWT from the request
-        String token = getJWTFromRequest(request);
-        System.out.println("gotten from request: " + token);
-
-        // Validate the token and extract user information
-        if (StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
-            System.out.println("validated token: " + token);
-            String username = tokenGenerator.getUsernameFromJWT(token);
-            System.out.println("username: " + username);
-
-            // Load user details using the username from the JWT
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-            System.out.println("userDetails: " + userDetails);
-
-            // Create an authentication token with user details and authorities
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                    userDetails,
-                    null,
-                    userDetails.getAuthorities()
-            );
-            System.out.println("authenticationToken: " + authenticationToken);
-
-            // Set additional details for authentication
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            System.out.println("authenticated token 2: " + authenticationToken);
-
-            // Set the authentication token in the SecurityContext
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            System.out.println("Authorities set in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-            System.out.println("Authorities from UserDetails: " + userDetails.getAuthorities());
-            System.out.println("Current SecurityContext: " + SecurityContextHolder.getContext());
+        String token = this.getJWTFromRequest(request); // Extract JWT from the request
+        if (StringUtils.hasText(token) && jwtProvider.validateTokenTimeValidity(token) && jwtProvider.validateDeviceTokenMatches(token, request)) {;
+            String identifier = jwtProvider.getIdentifierFromJWT(token);
+            this.proceedRequestAuthentication(request, identifier);
         }
+        filterChain.doFilter(request, response);// Proceed with the filter chain
+    }
 
-        // Log after setting context
-        System.out.println("After setting authentication: " + SecurityContextHolder.getContext());
-
-        // Proceed with the filter chain
-        filterChain.doFilter(request, response);
-
-        // Log after filter chain
-        System.out.println("After filter chain: " + SecurityContextHolder.getContext());
+    protected void proceedRequestAuthentication(HttpServletRequest request, String userIdentifier) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userIdentifier);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken( // Create an authentication token with user details and authorities
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // Set additional details for authentication
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken); // Set the authentication token in the SecurityContext
     }
 
     /**
@@ -102,4 +78,15 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+    //System.out.println("userDetails: " + userDetails);
+    //System.out.println("identifier: " + identifier);
+    //System.out.println("validated token: " + token);
+    //System.out.println("authenticationToken: " + authenticationToken);
+    //System.out.println("authenticated token 2: " + authenticationToken);
+    //System.out.println("Authorities set in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+    //System.out.println("Authorities from UserDetails: " + userDetails.getAuthorities());
+    //System.out.println("Current SecurityContext: " + SecurityContextHolder.getContext());
+    //System.out.println("After setting authentication: " + SecurityContextHolder.getContext());
+    //System.out.println("After filter chain: " + SecurityContextHolder.getContext());
 }
