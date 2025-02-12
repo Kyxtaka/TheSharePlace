@@ -21,7 +21,7 @@ public class UserCreateDTO implements Serializable {
     /**
      * The email address of the user.
      */
-    private Email email;
+    private String email;
 
     /**
      * The password of the user.
@@ -38,5 +38,5 @@ public class UserCreateDTO implements Serializable {
      */
     private String lastname;
 
-    private List<PublicRoleDTO> roles;
+    private List<String> roles;
 }

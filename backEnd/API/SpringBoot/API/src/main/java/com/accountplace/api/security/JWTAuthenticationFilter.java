@@ -1,6 +1,7 @@
 package com.accountplace.api.security;
 
 import com.accountplace.api.tools.NetworkToolsLib;
+import io.jsonwebtoken.Header;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,20 +74,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
      */
     public String getJWTFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+        if (StringUtils.hasText(bearerToken)) {
+            Header header = (Header) jwtProvider.getDataJWT(bearerToken).get("header");
+            if (header.get("use").toString().equalsIgnoreCase("bearer")) {
+                System.out.println(bearerToken);
+                return bearerToken;
+            }
         }
         return null;
     }
 
-    //System.out.println("userDetails: " + userDetails);
-    //System.out.println("identifier: " + identifier);
-    //System.out.println("validated token: " + token);
-    //System.out.println("authenticationToken: " + authenticationToken);
-    //System.out.println("authenticated token 2: " + authenticationToken);
-    //System.out.println("Authorities set in SecurityContext: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
-    //System.out.println("Authorities from UserDetails: " + userDetails.getAuthorities());
-    //System.out.println("Current SecurityContext: " + SecurityContextHolder.getContext());
-    //System.out.println("After setting authentication: " + SecurityContextHolder.getContext());
-    //System.out.println("After filter chain: " + SecurityContextHolder.getContext());
 }

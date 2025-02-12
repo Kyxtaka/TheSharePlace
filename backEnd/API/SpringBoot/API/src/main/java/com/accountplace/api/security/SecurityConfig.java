@@ -1,7 +1,7 @@
 package com.accountplace.api.security;
 
-import com.accountplace.api.security.customexception.CustomAccessDeniedHandler;
-import com.accountplace.api.security.customexception.CustomAuthenticationEntryPoint;
+import com.accountplace.api.exceptions.CustomAccessDeniedHandler;
+import com.accountplace.api.exceptions.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +55,7 @@ public class SecurityConfig implements WebMvcConfigurer  {
                 .allowedOrigins(
                         "https://theshareplace.hikarizsu.fr/",
                         "http://localhost:4200/"
-                )// Autorisation WebServer + Angular dev serveur
+                )//  WebServer + Angular dev server
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
@@ -123,13 +123,12 @@ public class SecurityConfig implements WebMvcConfigurer  {
      *
      * @return A BCryptPasswordEncoder bean.
      */
-    // Inject PasswordEncoder that use BCCryptPassword
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
+    /**²
      * Provides a CSRF token repository using cookies for CSRF protection.
      *
      * @return A CookieCsrfTokenRepository for CSRF protection.

@@ -1,4 +1,4 @@
-package com.accountplace.api.security.customexception;
+package com.accountplace.api.exceptions;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

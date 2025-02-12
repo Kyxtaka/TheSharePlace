@@ -7,12 +7,12 @@ import lombok.Getter;
  * This class is used to return the authentication token to the client.
  */
 @Getter
-public class AuthResponseDto {
+public class AuthResponseDTO {
 
     /**
      * The access token issued upon successful authentication.
      */
-    private String accessToken;
+    private final String accessToken;
 
     /**
      * The type of token, which is always "Bearer" for JWT tokens.
@@ -25,25 +25,7 @@ public class AuthResponseDto {
      *
      * @param accessToken The authentication token to be returned in the response.
      */
-    public AuthResponseDto(String accessToken) {
+    public AuthResponseDTO(String accessToken) {
         this.accessToken = accessToken;
-    }
-
-    /**
-     * Gets the authentication token.
-     *
-     * @return The access token.
-     */
-    public String getToken() {
-        return accessToken;
-    }
-
-    /**
-     * Sets a new authentication token.
-     *
-     * @param token The new token to be set.
-     */
-    public void setToken(String token) {
-        this.accessToken = token;
     }
 }

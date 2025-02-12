@@ -45,12 +45,4 @@ public class UserEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"))
     private List<GroupEntity> groups = new ArrayList<>();
 
-    public UserEntity(String username, String email, String password, String firstname, String lastname, List<RoleEntity> defaultRoles) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.roleEntities = defaultRoles;
-    }
 }

@@ -7,17 +7,22 @@ import com.accountplace.api.dto.crud.update.PublicGroupDTO;
 import com.accountplace.api.entity.GroupEntity;
 import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.entity.UserEntity;
+import com.accountplace.api.exceptions.auth.UserAlreadyExistException;
 import com.accountplace.api.repositories.RoleRepository;
 import com.accountplace.api.tools.Email;
 import com.accountplace.api.repositories.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.PersistenceContext;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service class to manage user-related operations.
@@ -28,15 +33,20 @@ public class UserCrudService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @PersistenceContext
+    private EntityManager entityManager;
     /**
      * Constructor injection for UserService dependencies.
      *
      * @param userRepository The repository for user-related database operations.
      */
     @Autowired
-    public UserCrudService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserCrudService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -46,9 +56,24 @@ public class UserCrudService {
      * @param createDTO The user entity to be created.
      * @return The saved user entity.
      */
-    public PublicUserDTO create(UserCreateDTO createDTO) {
+    @Transactional
+    public PublicUserDTO create(UserCreateDTO createDTO) throws UserAlreadyExistException, RuntimeException {
+        if (userRepository.existsByEmail(createDTO.getEmail())) {
+            throw new UserAlreadyExistException("EMAIL");
+        } else if (userRepository.existsByUsername(createDTO.getUsername())) {
+            throw new UserAlreadyExistException("USERNAME");
+        }
         UserEntity createdUser = this.convertCreateToEntity(createDTO);
+        this.userRepository.save(createdUser);
         return this.convertEntityToPublicDTO(createdUser);
+    }
+
+    @Transactional
+    public PublicUserDTO addRoleToUser(int userId, int roleId) throws RuntimeException {
+        UserEntity userEntity = this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        RoleEntity roleEntity = this.roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
+        userEntity.getRoleEntities().add(roleEntity);
+        return this.convertEntityToPublicDTO(userEntity);
     }
 
     /**
@@ -108,15 +133,22 @@ public class UserCrudService {
     }
 
     public UserEntity convertCreateToEntity(UserCreateDTO createDTO) throws EntityNotFoundException {
-        RoleEntity roleUser = roleRepository.getByName("USER");
-        if (roleUser == null) throw new EntityNotFoundException("Role USER not found");
-        return new UserEntity(
-                createDTO.getUsername(),
-                createDTO.getEmail().getMailAddress(),
-                createDTO.getPassword(),
-                createDTO.getFirstname(),
-                createDTO.getLastname(),
-                List.of(roleUser)
-        );
+        UserEntity user = new UserEntity();
+        user.setUsername(createDTO.getUsername());
+        user.setEmail(createDTO.getEmail());
+        user.setFirstname(createDTO.getFirstname());
+        user.setLastname(createDTO.getLastname());
+        user.setPassword(passwordEncoder.encode(createDTO.getPassword()));
+        RoleEntity defaultRole = roleRepository.findByName("USER").get();
+        if (!(user.getRoleEntities().contains(defaultRole))) user.getRoleEntities().add(defaultRole);
+        for (String roleName: createDTO.getRoles()) {
+            Optional<RoleEntity> role = roleRepository.findByName(roleName);
+            if (role.isPresent() && (!(user.getRoleEntities().contains(role.get())))) {
+                System.out.println("Role found: " + role.get().getName() +" with id "+ role.get().getId());
+                user.getRoleEntities().add(role.get());
+
+            }
+        }
+        return user;
     }
 }

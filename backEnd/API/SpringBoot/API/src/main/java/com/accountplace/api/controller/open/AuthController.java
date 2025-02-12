@@ -1,14 +1,12 @@
 package com.accountplace.api.controller.open;
 
 
-import com.accountplace.api.entity.RoleEntity;
-import com.accountplace.api.entity.UserEntity;
-import com.accountplace.api.dto.response.auth.AuthResponseDto;
+import com.accountplace.api.dto.crud.create.UserCreateDTO;
+import com.accountplace.api.dto.response.auth.AuthResponseDTO;
 import com.accountplace.api.dto.requestBody.auth.LoginDTO;
-import com.accountplace.api.dto.requestBody.register.RegisterUserBodyDTO;
-import com.accountplace.api.repositories.RoleRepository;
-import com.accountplace.api.repositories.UserRepository;
+import com.accountplace.api.exceptions.auth.UserAlreadyExistException;
 import com.accountplace.api.security.JWTProvider;
+import com.accountplace.api.service.crud.UserCrudService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,7 +15,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.accountplace.api.tools.NetworkToolsLib;
 
@@ -29,47 +26,34 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JWTProvider jwtProvider;
+    private final UserCrudService userCrudService;
 
     @Autowired
     private AuthController(
             AuthenticationManager authenticationManager,
-            UserRepository userRepository,
-            RoleRepository roleRepository,
-            PasswordEncoder passwordEncoder,
-            JWTProvider jwtProvider
+            JWTProvider jwtProvider,
+            UserCrudService userCrudService
     ) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
+
         this.jwtProvider = jwtProvider;
+        this.userCrudService = userCrudService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, String>> registerUser(@RequestBody RegisterUserBodyDTO registerUserBodyDTO) {
-        if (userRepository.existsByEmail(registerUserBodyDTO.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("message", "Email already exists"));
-        } else if (userRepository.existsByUsername(registerUserBodyDTO.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("message", "Username already exists"));
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserCreateDTO userCreateDTO) {
+        try {
+            this.userCrudService.create(userCreateDTO);
+        } catch (UserAlreadyExistException e) {
+            if (e.getType().equals("EMAIL")) return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("message", "Email already exists"));
+            else if (e.getType().equals("USERNAME")) return ResponseEntity.status(HttpStatus.CONFLICT).body(Collections.singletonMap("message", "Username already exists"));
         }
-        UserEntity userEntity = new UserEntity();
-        userEntity.setEmail(registerUserBodyDTO.getEmail());
-        userEntity.setUsername(registerUserBodyDTO.getUsername());
-        userEntity.setFirstname(registerUserBodyDTO.getFirstname());
-        userEntity.setLastname(registerUserBodyDTO.getLastname());
-        userEntity.setPassword(passwordEncoder.encode(registerUserBodyDTO.getPassword()));
-        RoleEntity roles = roleRepository.findByName("USER").get();
-        userEntity.setRoleEntities(Collections.singletonList(roles));
-        userRepository.save(userEntity);
         return ResponseEntity.ok(Collections.singletonMap("message", "User registered successfully"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDTO loginDto, HttpServletRequest request){
+    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDTO loginDto, HttpServletRequest request){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(),
                         loginDto.getPassword()));
@@ -78,8 +62,7 @@ public class AuthController {
         String userAgent = NetworkToolsLib.getUserAgent(request);
         String token = jwtProvider.generateToken(authentication, rawIP, userAgent);
         System.out.println("got from Ip address: "+NetworkToolsLib.getClientIpAddress(request));
-        return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
+        //return new ResponseEntity<>(new AuthResponseDTO(token), HttpStatus.OK);
+        return ResponseEntity.ok(new AuthResponseDTO(token));
     }
-
-
 }

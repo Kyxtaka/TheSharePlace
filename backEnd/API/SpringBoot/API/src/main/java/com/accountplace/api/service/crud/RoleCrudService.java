@@ -5,13 +5,21 @@ import com.accountplace.api.dto.crud.pub.PublicRoleDTO;
 import com.accountplace.api.dto.crud.update.RoleUpdateDTO;
 import com.accountplace.api.entity.RoleEntity;
 import com.accountplace.api.repositories.RoleRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RoleCrudService {
 
     private final RoleRepository roleRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+
 
     @Autowired
     public RoleCrudService(RoleRepository roleRepository) {
