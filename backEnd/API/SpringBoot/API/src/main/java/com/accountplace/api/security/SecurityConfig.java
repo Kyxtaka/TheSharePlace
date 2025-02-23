@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,6 +35,7 @@ public class SecurityConfig implements WebMvcConfigurer  {
     private final CustomAuthenticationEntryPoint authEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final String APIauthUrl = "/api/auth/**";
+    private final String APIAdminReserveURL = "/api/admin/**";
 
     @Autowired
     public SecurityConfig(
@@ -72,37 +74,38 @@ public class SecurityConfig implements WebMvcConfigurer  {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(authEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
+            .csrf(AbstractHttpConfigurer::disable)
+            .exceptionHandling(exceptionHandling ->
+                exceptionHandling
+                    .authenticationEntryPoint(authEntryPoint)
+                    .accessDeniedHandler(accessDeniedHandler)
+            )
+            .sessionManagement( sessionManagement ->
+                    sessionManagement
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers(HttpMethod.POST,APIauthUrl).permitAll()
+                    .requestMatchers(APIAdminReserveURL).hasAnyRole("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .addFilterBefore(
+                jwtAuthenticationFilter(),
+                UsernamePasswordAuthenticationFilter.class
+            )
+            .securityContext( securityContext -> securityContext
+                .securityContextRepository(
+                    new DelegatingSecurityContextRepository(
+                        new RequestAttributeSecurityContextRepository(),
+                        new HttpSessionSecurityContextRepository()
+                    )
                 )
-                //Dont create session on server side
-                .sessionManagement( sessionManagement ->
-                        sessionManagement
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
-                // requests Authorizations
-                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-                        authorizationManagerRequestMatcherRegistry
-                                .requestMatchers(HttpMethod.POST,APIauthUrl).permitAll()
-                                .anyRequest().authenticated()
-                )
-                //filter
-                .addFilterBefore(
-                        jwtAuthenticationFilter(),
-                        UsernamePasswordAuthenticationFilter.class
-                )
-                .securityContext( (securityContext) -> securityContext
-                        .securityContextRepository(new DelegatingSecurityContextRepository(
-                                new RequestAttributeSecurityContextRepository(),
-                                new HttpSessionSecurityContextRepository()
-                        ))
-                )
-//                .requiresChannel(channel -> channel
-//                        .anyRequest().requiresSecure()
-//                )
-                .httpBasic(Customizer.withDefaults());
+            )
+//              .requiresChannel(channel -> channel
+//                  .anyRequest().requiresSecure()
+//          )
+            .httpBasic(Customizer.withDefaults());
         return http.build();
     }
 

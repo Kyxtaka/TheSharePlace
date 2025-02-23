@@ -8,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 
 @Component
 public class JWTProvider {
@@ -26,8 +25,6 @@ public class JWTProvider {
         Date currentDate = new Date();
         Date expirationDate = new Date(currentDate.getTime() + SecurityConstants.ACCESS_TOKEN_VALIDITY_SECONDS);
         HashMap<String, Object> claims = new HashMap<>();
-        //claims.put("identifier", identifier);
-        claims.put("rawIP", rawIP);
         claims.put("hashIP", hashIP);
         claims.put("userAgent", userAgent);
         HashMap<String, Object> headers = new HashMap<>();
@@ -60,7 +57,6 @@ public class JWTProvider {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-
         return claims.getSubject();
     }
 

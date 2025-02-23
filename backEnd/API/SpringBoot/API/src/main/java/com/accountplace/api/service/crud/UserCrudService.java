@@ -14,10 +14,7 @@ import com.accountplace.api.repositories.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceContext;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,14 +65,6 @@ public class UserCrudService {
         return this.convertEntityToPublicDTO(createdUser);
     }
 
-    @Transactional
-    public PublicUserDTO addRoleToUser(int userId, int roleId) throws RuntimeException {
-        UserEntity userEntity = this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
-        RoleEntity roleEntity = this.roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
-        userEntity.getRoleEntities().add(roleEntity);
-        return this.convertEntityToPublicDTO(userEntity);
-    }
-
     /**
      * Updates an existing user account by its ID with the provided user data.
      *
@@ -100,9 +89,41 @@ public class UserCrudService {
      * @param id The ID of the user to delete.
      * @return A success message indicating the user was deleted.
      */
-    public String delete(Integer id) {
-        userRepository.deleteById(id);
+    @Transactional
+    public String delete(Integer id) throws RuntimeException {
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException("No user with id: " + id + " found");
+        }
+        this.userRepository.deleteById(id);
         return "Account with id " + id + " has been deleted successfully";
+    }
+
+    @Transactional
+    public PublicUserDTO grantRoleToUser(int userId, int roleId) throws Exception {
+        UserEntity userEntity = this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        RoleEntity roleEntity = this.roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
+        /*
+        for (RoleEntity role : userEntity.getRoleEntities()) {
+            if (role.getId() == roleId) throw new RuntimeException("User with id:" +userId+ " already has the role id:" +roleId);
+        }*/
+        if (userEntity.getRoleEntities().contains(roleEntity)) {
+            throw new RuntimeException("User with id:" +userId+ " already has the role id:" +roleId);
+        }
+        userEntity.getRoleEntities().add(roleEntity);
+        userRepository.save(userEntity);
+        return this.convertEntityToPublicDTO(userEntity);
+    }
+
+    @Transactional
+    public PublicUserDTO revokeRoleToUser(int userId, int roleId) throws Exception {
+        UserEntity userEntity = this.userRepository.findById(userId).orElseThrow(EntityNotFoundException::new);
+        RoleEntity roleEntity = this.roleRepository.findById(roleId).orElseThrow(EntityNotFoundException::new);
+        if (!userEntity.getRoleEntities().contains(roleEntity)) {
+            throw new RuntimeException("User with id:" +userId+ " dont has the role id:" +roleId);
+        }
+        userEntity.getRoleEntities().remove(roleEntity);
+        userRepository.save(userEntity);
+        return this.convertEntityToPublicDTO(userEntity);
     }
 
     /**

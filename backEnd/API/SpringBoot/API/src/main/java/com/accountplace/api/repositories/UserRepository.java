@@ -32,7 +32,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
      * @param id The ID of the user to search for.
      * @return An {@code Optional} containing the found {@code UserEntity}, or empty if not found.
      */
-    Optional<UserEntity> findById(Integer id);
+    Optional<UserEntity> findById(int id);
 
     /**
      * Checks if a user with the given username exists.

@@ -1,9 +1,7 @@
-package com.accountplace.api.controller.secured.consulter;
+package com.accountplace.api.controller.secured.anyone;
 
 
 import com.accountplace.api.dto.crud.update.PublicPlatformDTO;
-import com.accountplace.api.dto.requestBody.register.RegisterPlatformDTO;
-import com.accountplace.api.entity.PlatformEntity;
 import com.accountplace.api.service.consulter.PlatformConsulterService;
 import com.accountplace.api.service.crud.PlatformCrudService;
 import org.springframework.beans.factory.annotation.Autowired;

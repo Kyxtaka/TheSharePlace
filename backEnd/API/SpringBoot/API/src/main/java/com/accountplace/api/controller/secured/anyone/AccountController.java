@@ -1,4 +1,4 @@
-package com.accountplace.api.controller.secured.consulter;
+package com.accountplace.api.controller.secured.anyone;
 
 import com.accountplace.api.dto.crud.pub.PublicAccountDTO;
 import com.accountplace.api.dto.requestBody.register.RegisterAccountBodyDTO;

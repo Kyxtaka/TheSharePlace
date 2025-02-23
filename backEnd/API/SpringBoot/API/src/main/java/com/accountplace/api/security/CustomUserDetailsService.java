@@ -48,8 +48,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         Email tmpEmail = new Email(identifier);
         boolean isEmail = tmpEmail.isValid();
         UserEntity user = null;
-
-        // Fetch user by email if valid, otherwise by identifier
         if (isEmail) {
             user = userRepository.findByEmail(identifier).orElseThrow(
                     () -> new UsernameNotFoundException("identifier or email not found"));
@@ -57,8 +55,6 @@ public class CustomUserDetailsService implements UserDetailsService {
             user = userRepository.findByUsername(identifier).orElseThrow(
                     () -> new UsernameNotFoundException("identifier or email not found"));
         }
-
-        // Return a UserDetails object with the user’s credentials and authorities
         return new User(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoleEntities()));
     }
 

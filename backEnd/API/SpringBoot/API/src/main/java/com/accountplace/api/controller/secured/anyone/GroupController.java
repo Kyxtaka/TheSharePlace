@@ -1,8 +1,6 @@
-package com.accountplace.api.controller.secured.consulter;
+package com.accountplace.api.controller.secured.anyone;
 
 import com.accountplace.api.dto.crud.update.PublicGroupDTO;
-import com.accountplace.api.dto.crud.update.PublicPlatformDTO;
-import com.accountplace.api.dto.requestBody.register.RegisterGroupDTO;
 import com.accountplace.api.repositories.GroupRepository;
 import com.accountplace.api.service.consulter.GroupConsulterService;
 import com.accountplace.api.service.crud.GroupCrudService;

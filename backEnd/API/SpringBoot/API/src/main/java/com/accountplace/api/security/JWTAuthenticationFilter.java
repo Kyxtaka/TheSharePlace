@@ -1,6 +1,9 @@
 package com.accountplace.api.security;
 
+import com.accountplace.api.exceptions.CustomAccessDeniedHandler;
+import com.accountplace.api.exceptions.CustomAuthenticationEntryPoint;
 import com.accountplace.api.tools.NetworkToolsLib;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Header;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,12 +52,17 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String token = this.getJWTFromRequest(request); // Extract JWT from the request
-        if (StringUtils.hasText(token) && jwtProvider.validateTokenTimeValidity(token) && jwtProvider.validateDeviceTokenMatches(token, request)) {;
-            String identifier = jwtProvider.getIdentifierFromJWT(token);
-            this.proceedRequestAuthentication(request, identifier);
+        try {
+            String token = this.getJWTFromRequest(request);// Extract JWT from the request
+            if (StringUtils.hasText(token) && jwtProvider.validateTokenTimeValidity(token) && jwtProvider.validateDeviceTokenMatches(token, request)) {
+                String identifier = jwtProvider.getIdentifierFromJWT(token);
+                this.proceedRequestAuthentication(request, identifier);
+            }
+        }catch (ExpiredJwtException e){
+            System.out.println("JWT Expired");
+        }finally {
+            filterChain.doFilter(request, response);// Proceed with the filter chain
         }
-        filterChain.doFilter(request, response);// Proceed with the filter chain
     }
 
     protected void proceedRequestAuthentication(HttpServletRequest request, String userIdentifier) {
