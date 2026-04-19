@@ -35,3 +35,4 @@ build/
 ### Security Key ###
 /src/main/java/com/accountplace/api/security/SecurityConstants.java
 /src/main/resources/application.properties
+.env*
