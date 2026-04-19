@@ -11,7 +11,6 @@ Vos service :
 - créer des groupes de partage 
 - Ajouter des compte à partager
 
-
 ##  Note
 * usage de `PostgreSQL` en SGBD
 * usage de `SpringBoot` pour le back-End (API)
