@@ -1,58 +1,132 @@
--- create users details
-CREATE TABLE USERS (
-    id SERIAL PRIMARY KEY,
-    password varchar(255),
-    username varchar(255) UNIQUE NOT null,
-    mail varchar(255) UNIQUE NOT NULL,
-    firstname varchar(255),
-    lastname varchar(255)
+-- ...existing code...
+-- Remplace le contenu du fichier par ceci :
+
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- USERS
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    firstname VARCHAR(255),
+    lastname VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- create roles in the application 
-CREATE TABLE ROLES (
-    id SERIAL PRIMARY KEY,
-    name varchar(255) UNIQUE NOT NULL
+-- ROLES
+CREATE TABLE roles (
+    role_id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    role_name VARCHAR(255) UNIQUE NOT NULL
 );
 
--- create user and roles mapping
-CREATE TABLE USER_ROLES (
-    user_id int references USERS (id),
-    role_id int references ROLES (id),
+-- USER <-> ROLE
+CREATE TABLE user_roles (
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    role_id INT NOT NULL REFERENCES roles(role_id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
 
--- create groups that will contains shared accounts
-CREATE TABLE GROUPS (
-    id SERIAL PRIMARY KEY,
-    unique_id BIGINT UNIQUE NOT NULL,
-    name varchar(255) UNIQUE NOT null,
-    password varchar(255),
-    group_description varchar(255)
+-- GROUPS
+CREATE TABLE groups (
+    group_id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    hashed_vault_key VARCHAR(255),
+    group_description VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- create platefor, plateforme of the shared accounts
-CREATE TABLE PLATFORMS (
-    id SERIAL PRIMARY KEY,
-    name varchar(255) UNIQUE NOT NULL,
-    url varchar(255),
-    imgRef varchar(255)
+-- PLATFORMS
+CREATE TABLE platforms (
+    platform_id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    website_url VARCHAR(255),
+    img_url VARCHAR(255)
 );
 
--- create table account who will be shared with other people 
-CREATE TABLE ACCOUNTS (
-    id SERIAL PRIMARY KEY,
-    username varchar(255),
-    password varchar(255),
-    mail varchar(255),
-    A2F int not null constraint chk_A2F CHECK (A2F in (0,1)),
-    platform_id int references PLATFORMS (id),
-    group_id int references GROUPS (id)
+-- SHARED ACCOUNTS
+CREATE TABLE accounts (
+    account_id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    username VARCHAR(255),
+    encrypted_password TEXT NOT NULL,
+    email VARCHAR(255),
+    a2f_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    platform_id INT NOT NULL REFERENCES platforms(platform_id) ON DELETE RESTRICT,
+    group_id INT NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Creation de la relation de role pour les group et utilisateurs
-CREATE TABLE GROUPS_USERS (
-    group_id int references GROUPS (id),
-    user_id int references USERS (id),
-    role_id int references ROLES (id),
+CREATE TABLE account_requests (
+    account_request_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    platform_id INT NOT NULL REFERENCES platforms(platform_id) ON DELETE RESTRICT,
+    request_status VARCHAR(50) NOT NULL CHECK (request_status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    request_uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    request_description VARCHAR(255),
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- GROUP <-> USER with role
+CREATE TABLE group_users (
+    group_id INT NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    role_id INT NOT NULL REFERENCES roles(role_id) ON DELETE RESTRICT,
     PRIMARY KEY (group_id, user_id, role_id)
 );
+
+CREATE TABLE account_history (
+    account_history_id SERIAL PRIMARY KEY,
+    account_id INT NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
+    changed_by_user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
+    change_type VARCHAR(50) NOT NULL CHECK (change_type IN ('created', 'updated', 'deleted')),
+    change_description VARCHAR(255),
+    changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ARCHIVE (GDPR)
+CREATE TABLE archived_accounts (
+    archived_account_id SERIAL PRIMARY KEY,
+    uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    username VARCHAR(255),
+    encrypted_password TEXT,
+    email VARCHAR(255),
+    a2f_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+    platform_id INT REFERENCES platforms(platform_id) ON DELETE SET NULL,
+    group_id INT REFERENCES groups(group_id) ON DELETE SET NULL,
+    archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE group_join_requests (
+    group_join_request_id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    group_id INT NOT NULL REFERENCES groups(group_id) ON DELETE CASCADE,
+    request_status VARCHAR(50) NOT NULL CHECK (request_status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    request_uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    request_password VARCHAR(255),
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expire_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '7 days'),
+    revoked BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE a2f_requests (
+    a2f_request_id SERIAL PRIMARY KEY,
+    account_id INT NOT NULL REFERENCES accounts(account_id) ON DELETE CASCADE,
+    request_uuid UUID DEFAULT gen_random_uuid() UNIQUE NOT NULL,
+    request_status VARCHAR(50) NOT NULL CHECK (request_status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+    request_magic_token VARCHAR(255),
+    request_pin_token VARCHAR(255),
+    requested_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expire_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL '10 minutes'),
+    revoked BOOLEAN DEFAULT FALSE
+);
+
+-- Index utiles
+CREATE INDEX idx_accounts_group_id ON accounts(group_id);
+CREATE INDEX idx_accounts_platform_id ON accounts(platform_id);
+CREATE INDEX idx_group_users_user_id ON group_users(user_id);
+CREATE INDEX idx_account_requests_user_id ON account_requests(user_id);
