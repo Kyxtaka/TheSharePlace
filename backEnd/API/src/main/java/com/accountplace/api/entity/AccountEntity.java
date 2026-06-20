@@ -2,49 +2,72 @@ package com.accountplace.api.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
-@Table(name = "ACCOUNTS")
+@Table(name = "accounts", indexes = {
+        @Index(name = "idx_accounts_group_id",    columnList = "group_id"),
+        @Index(name = "idx_accounts_platform_id", columnList = "platform_id")
+})
 @Data
+@Builder
 @NoArgsConstructor
-public class AccountEntity implements Serializable {
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class AccountEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "account_id")
+    @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(name = "mail")
-    private String mail;
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private UUID uuid = UUID.randomUUID();
 
     @Column(name = "username")
     private String username;
 
-    @Column(name = "password")
-    private String password;
+    /**
+     * Password encrypted with the group vault key — never return raw in any DTO.
+     */
+    @Column(name = "encrypted_password", nullable = false, columnDefinition = "TEXT")
+    private String encryptedPassword;
 
-    @Column(name = "a2f")
-    private Integer a2f;
+    @Column(name = "email")
+    private String email;
 
-    @Column(name = "platform_id", nullable = false)
-    private Integer platform_id;
+    @Column(name = "a2f_enabled", nullable = false)
+    @Builder.Default
+    private Boolean a2fEnabled = false;
 
-    @Column(name = "group_id", nullable = false)
-    private Integer group_id;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "platform_id", nullable = false)
+    @ToString.Exclude
+    private PlatformEntity platform;
 
-    public AccountEntity(
-            String mail,
-            String username,
-            String password,
-            Integer a2f,
-            Integer platform_id,
-            Integer group_id) {
-        this.mail = mail;
-        this.username = username;
-        this.password = password;
-        this.a2f = a2f;
-        this.platform_id = platform_id;
-        this.group_id = group_id;
-    }
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "group_id", nullable = false)
+    @ToString.Exclude
+    private GroupEntity group;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    private List<AccountHistoryEntity> history = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @ToString.Exclude
+    private List<A2fRequestEntity> a2fRequests = new ArrayList<>();
 }

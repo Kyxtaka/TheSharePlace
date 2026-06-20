@@ -1,0 +1,37 @@
+server:
+  port: ${SERVER_PORT:8080}
+  allowed_origins: ${SERVER_CORS_ALLOWED_ORIGINS}
+
+application:
+  name: TheSharePlaceAPI
+  version: 0.0.1
+  author: Hikarizsu
+
+spring:
+  config:
+    import: optional:dotenv:.env.development
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET}
+    expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:15}
+    unit: ${JWT_ACCESS_TOKEN_UNIT}
+  refresh:
+    secret: ${JWT_REFRESH_SECRET}
+    expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:15}
+    unit: ${JWT_REFRESH_TOKEN_UNIT}
+
+log:
+  directory: ${LOG_DIRECTORY:./tmp/logs}
+  level: ${LOG_LEVEL:DEBUG}
+
+# smtp:
+#   host: ${SMTP_HOST}
+#   port: ${SMTP_PORT}
+#   username: ${SMTP_USERNAME}
+#   password: ${SMTP_PASSWORD}

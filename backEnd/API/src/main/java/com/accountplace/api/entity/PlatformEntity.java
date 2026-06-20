@@ -2,31 +2,34 @@ package com.accountplace.api.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.UuidGenerator;
 
-import java.io.Serializable;
+import java.util.UUID;
 
 @Entity
-@Table(name = "PLATFORMS")
+@Table(name = "platforms")
 @Data
+@Builder
 @NoArgsConstructor
-public class PlatformEntity implements Serializable {
+@AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class PlatformEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "platform_id")
+    @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "uuid", nullable = false, unique = true, updatable = false)
+    private UUID uuid =  UUID.randomUUID();
+
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "url", nullable = false)
-    private String url;
+    @Column(name = "website_url")
+    private String websiteUrl;
 
-    @Column(name = "imgRef", nullable = true)
-    private String imgRef;
-
-    public PlatformEntity(String name, String url, String imgRef) {
-        this.name = name;
-        this.url = url;
-        this.imgRef = imgRef;
-    }
+    @Column(name = "img_url")
+    private String imgUrl;
 }

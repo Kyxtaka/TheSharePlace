@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class UserAlreadyExistException extends Exception {
-    private String type;
+    private final String type;
     private final String message;
     public UserAlreadyExistException(String type) {
         super("User " + type + " already exists");
